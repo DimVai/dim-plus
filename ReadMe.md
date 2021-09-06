@@ -31,13 +31,18 @@ Set max-width for divs, using one of these classes
 ## **Drop-down (menus)**
 Use a parent div that contains two things: the trigger-button and the drop-down menu. 
 
-Set the parent as
+Set the parent as one of the following:
 
-`OpenChildrenOnClick` or `OpenChildrenOnHover`
+```CSS
+OpenChildrenOnClick
+OpenChildrenOnHover
+```
 
 And the drop down area:
 
-`DropdownArea`
+```CSS
+DropdownArea
+```
 
 Note 1. The trigger-button does not need a class.
 
@@ -48,24 +53,32 @@ Note 2. If you want the trigger-button to remain "hovered" when you hover the dr
 
 ## **Centering things**
 
-`center`
+```CSS
+center
+```
 
 Centers an image or a text. 
 
 
 Although the above class does its job most of the time, mainly in text or pictures, the **recommended** way to center **everything** is to add the appropriate class to the **parent**:
 
-`center-contents`
+```CSS
+center-contents
+```
 
 Centers one or more children horizontally. If there is more space vertically, it will also center it/them vertically. If there are more than one, they will be stacked one below the other. 
 
 You can place more than one "things" inside, and they will all be centered. *Note*: if it is a text paragraph, the class will "position" it to the center, not "align" it.
 
-`center-contents-inline`
+```CSS
+center-contents-inline
+```
 
 Centers children, only horizontally, all in the **same line**.
 
-`center-contents-inline-middle`
+```CSS
+center-contents-inline-middle
+```
 
 Centers the child/children **both vertically and horizontally**. If more than one item, they will be on the same line. 
 
@@ -93,12 +106,14 @@ The **difference** using `flex` or a simple `grid` to implement these, is that t
 
 ## **Equal Columns**
 
-`equal-columns`
+```CSS
+equal-columns
+```
 
 Use this in order to have arbitrary number of children-columns (`div` or anything) with equal widths.
 
 This is responsive with the `md` and `lg`:
-```css
+```CSS
 equal-columns-md 
 equal-columns-lg   
 ```
@@ -107,7 +122,9 @@ equal-columns-lg
 
 ## **Paragraph text to columns**
 
-`columns`
+```CSS
+columns
+```
 
 This class splits a text/paragraph to columns, using the standard widths recommended for easier reading (that's why it is not customizable).
 
@@ -148,15 +165,21 @@ The `style` attribute with the parameteres is optional.
 
 ## **Scrolling**
 
-`scrollable`
+```CSS
+scrollable
+```
 
 **No scrollbars**, but keeping the ability to scroll with the mouse scroll wheel.
 
-`no-scrollable`
+```CSS
+no-scrollable
+```
 
 **No-scrollbars** and **no ability to scroll** even with mouse scroll wheel.
 
-`scrollable-bars`
+```CSS
+scrollable-bars
+```
 
 Adds scrollbars and the ability to scroll if for some reason they do not exist.
 
@@ -172,12 +195,20 @@ Adds scrollbars and the ability to scroll if for some reason they do not exist.
 
 ## **CSS Classes with no documentation or support**
 
-`unseparated`: Use in a `span`. The text inside this span will be in a single line (no wrapping) if it can fit in page's width. 
+```CSS
+unseparated
+```
+Use in a `span`. The text inside this span will be in a single line (no wrapping) if it can fit in page's width. 
 
-`sticky`: stick something to top, when scroll by.
+```CSS
+sticky
+```
+Stick something to top, when scroll by.
 
-`center-left`: center on mobile, left on desktop.
-
+```CSS
+center-left
+```
+center on mobile, left on desktop
 CSS for Lazy images. In the HTML set:
 ```HTML
 <img src="nothing-or-small-pic" data-src="real-img-source" data-lazy="#">
@@ -325,7 +356,7 @@ Waits for a condition to be met and, only then, executes a function. `checkInter
 The redommended way to use it is using defined functions:
 
 ```JavaScript
-let myCondition = () => (number==1)   //gets true if number==1
+let myCondition = ()=>(number==1)   //gets true if number==1
 let callWhenReady = ()=>console.log("run when ready")    //this function will run
 setTimeoutUntil(myCondition,callWhenReady)
 ```
@@ -338,7 +369,7 @@ setTimeoutUntil({number},()=>console.log("run")) //run when number gets true/tru
 ```
 These do not work:
 ```JavaScript
-setTimeoutUntil(myCondition(),callWhenReady)        //do not use () in either argument. Use bind
+setTimeoutUntil(myCondition(),callWhenReady)        //do not use () in either argument. Use bind.
 setTimeoutUntil(number,callWhenReady)       //does not work
 ```
 

@@ -40,7 +40,7 @@ Array.prototype.sortByNumber = function() {
 //   };
 
 /** isValid(variable) returns true if variable has value, or false if it is null/undefined */
-var isValid = inputVariable => inputVariable != null;
+var isValid = inputVariable => {try{return (inputVariable != null)||false}catch{return false}};
 
 /** Creates an integer generator. How to Use: let nextNumber = intGenerator(1); console.log(nextNumber()); */
 let intGenerator = (int=1) => () => int++;      //if no parameter, first number is 1. 
