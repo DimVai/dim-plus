@@ -231,6 +231,21 @@ noDark
 # **dim-plus.js**
 
 
+
+## **Selecting HTML Elements**
+
+
+### `Q(element)`
+
+Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.queryElementAll(elements)` and `document.queryElement(element)`. If the paramenter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
+```JavaScript
+Q('p')      //returns an array of all p elements 
+Q('.btn')   //returns an array of all elements with class "btn"
+Q('#enter') //returns the element with id "enter"
+```
+
+<hr>
+
 ## **Variable and prototypes:**
 
 
@@ -241,11 +256,25 @@ Array.numberSort()
 ```
 These do what they seem they do! Return the last item of the array (like `pop` without removing it), return an array having only the unique values of the original, and sort an array of numbers numerically. 
 
-### `IsValid(variable)`
+### `isValid(variableAsString)`
 
-Returns true if variable/anything has value, or false if it is null/undefined.
+Returns true if variable/anything exists and has a value, or false if it is null/undefined. The argument must be a string. So use `isValid('myVar')` to check if `myVar` is a valid variable. The function returns `true` if the variable is falsey (eg if `myVar==false` or `myVar==0`). 
 
 <hr>
+
+### `safeEval(expressionAsString)`
+
+Give it a string with a name of expression/variable. If the expression/variable evaluates, the function returns the evaluation. Else, it returns `false` or the second optional argument.
+```JavaScript
+let surname = 'Johnes'
+safeEval('surname')                 // 'Johnes'
+safeEval('surName')                 //  false
+safeEval('surName','no surname')    // 'no surname'
+```
+
+<hr>
+
+
 
 ## **Integer Generator**
 
@@ -261,7 +290,7 @@ let nextNumber = intGenerator(1)
 The argument is optional and defines the first integer. If ommited, then it starts at `1`. 
 
 
-**2nd step**. Call your function (without arguments) as many times you want: 
+**2nd step**. Call your function (without any arguments) as many times you want: 
 ```JavaScript
 nextNumber()  //returns 1
 nextNumber()  //returns 2

@@ -59,10 +59,10 @@
 
 /* τοποθέτηση στο κέντρο της γραμμής για div ή image, και στοίχιση κειμένου στο κέντρο για κείμενο */
 .center{    
-	display: block;			/* important for everything */
-	margin-left: auto;		/* centers if this is image */
-	margin-right: auto;		/* centers if this is image */
-	text-align: center;		/* centers if this is text */
+	display: block;					/* important for everything */
+	margin-left: auto !important;	/* centers if this is image or div*/
+	margin-right: auto !important;	/* centers if this is image or div*/
+	text-align: center;				/* centers if this is text */
   }
 
 /* Τοποθέτηση περιεχομένων στο κέντρο, ως προς τον οριζόντιο άξονα. Αν είναι πολλά, μπαίνουν το ένα κάτω από το άλλο. 

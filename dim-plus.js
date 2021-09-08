@@ -15,6 +15,10 @@ let log = console.log;
  */
  function check(message = "check ok") {console.debug(message)}
 
+/** Returns the HTML Element(s) from DOM*/
+var Q = (queryString) => {
+    return queryString.charAt(0)=='#' ? document.querySelector(queryString)||null : document.querySelectorAll(queryString)||[];
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -39,13 +43,19 @@ Array.prototype.sortByNumber = function() {
 //     return !booleanVariable;
 //   };
 
-/** isValid(variable) returns true if variable has value, or false if it is null/undefined */
-var isValid = inputVariable => {try{return (inputVariable != null)||false}catch{return false}};
-
 /** Creates an integer generator. How to Use: let nextNumber = intGenerator(1); console.log(nextNumber()); */
 let intGenerator = (int=1) => () => int++;      //if no parameter, first number is 1. 
 
 
+/** isValid(variableAsString) returns true if variable exists and has a valid value, or false if it is null/undefined */
+var isValid = variableAsString => {try{return (eval(variableAsString) != null)||false}catch{return false}};
+
+/** Gets a sting with the name of an expression or variable and returns its value if it is valid */
+let safeEval = (expressionAsString, valueIfInvalid=false) => {
+    try{
+        return eval(expressionAsString);
+    }catch{return valueIfInvalid}
+};
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -415,5 +425,11 @@ let testingUntil = async () => {
     // log("until success!");
 };
 testingUntil();
+
+
+// let surname = 'Johnes';
+// log(safeEval('surname'));                 // 'Johnes'
+// log(safeEval('surName'));                 // false
+// log(safeEval('surName','no surname'));    // 'no surname'
 
 
