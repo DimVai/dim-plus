@@ -1,6 +1,30 @@
 /* jshint unused:false , strict:global, esversion: 10, evil: true */
 "use strict";
 
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////               SHORTCUTS              ///////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+/** 
+ * Returns the HTML Element(s) from DOM like jQuery's $.
+ * @type {(queryString: string) => HTMLElement[]}  
+ */
+var Q = (queryString) => {
+    return queryString.charAt(0)=='#' ? document.querySelector(queryString)||null : document.querySelectorAll(queryString)||[];
+};
+
+/** 
+ * Change the value of a css variable 
+ * @type {(variable: string, value: string) => string}  
+ */
+var setCssProperty = (variable,value) => {document.documentElement.style.setProperty(variable, value); return value};
+
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////               LOGGING              ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -12,13 +36,8 @@ let log = console.log;
  * Χρήση σε development περιβάλλον. για να ελέγχεις αν λειτουργεί ο κώδικας, πχ αν γίνεται trigger το κλικ κουμπιού.
  * Γράφεις check(); ή check("button click"); αντί για console.debug(κάτι)...
  * @param {string} message the message to console.debug 
- */
- function check(message = "check ok") {console.debug(message)}
-
-/** Returns the HTML Element(s) from DOM*/
-var Q = (queryString) => {
-    return queryString.charAt(0)=='#' ? document.querySelector(queryString)||null : document.querySelectorAll(queryString)||[];
-};
+*/
+function check(message = "check ok") {console.debug(message)}
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

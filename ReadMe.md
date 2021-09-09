@@ -82,7 +82,7 @@ center-contents-inline-middle
 
 Centers the child/children **both vertically and horizontally**. If more than one item, they will be on the same line. 
 
-Finally, these inline cases are **responsive** using the `md` and `lg` brakpoints, meaning that they are not inline in smaller devices. Examples:
+Finally, these inline cases are **responsive** using the `md` and `lg` breakpoints, meaning that they are not inline in smaller devices. Examples:
 
 ```css
 center-contents-md-inline 
@@ -92,7 +92,7 @@ center-contents-lg-inline-middle
 
 ## **Standard inline structures**
 
-Use the standard inline stucture for easy inline alignment of children (for example in the header):
+Use the standard inline structure for easy inline alignment of children (for example in the header):
 ```css
 standard-inline-3   /*left-center-right*/
 standard-inline-2   /*left-right*/
@@ -133,14 +133,14 @@ This class splits a text/paragraph to columns, using the standard widths recomme
 
 ## **Gallery of pictures**
 
-This is a very diffucult task that gets done easily. The classes are:
+This is a very difficult task that gets done easily. The classes are:
 ```css
 gallery-grid 
 gallery-flex  
 ```
 They have their children (divs or images) in a nice responsive grid.
 
-These have a few differences (mainly in the maximum sizes of the children and in the alignment of the last row). **Try both** and then deside.
+These have a few differences (mainly in the maximum sizes of the children and in the alignment of the last row). **Try both** and then decide.
 
 Use divs or pictures or anything as children.
 
@@ -155,7 +155,7 @@ How to use. In the parent HTML use:
         (children divs or images)
 	</div>
 ```
-The `style` attribute with the parameteres is optional. 
+The `style` attribute with the parameters is optional. 
 
 (For `gallery-flex`, use `gallery-flex` in the above HTML snippet instead of `gallery-grid`. The style attribute is the same and it is optional.)
 
@@ -237,7 +237,7 @@ noDark
 
 ### `Q(element)`
 
-Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.queryElementAll(elements)` and `document.queryElement(element)`. If the paramenter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
+Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.queryElementAll(elements)` and `document.queryElement(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
 ```JavaScript
 Q('p')      //returns an array of all p elements 
 Q('.btn')   //returns an array of all elements with class "btn"
@@ -258,7 +258,7 @@ These do what they seem they do! Return the last item of the array (like `pop` w
 
 ### `isValid(variableAsString)`
 
-Returns true if variable/anything exists and has a value, or false if it is null/undefined. The argument must be a string. So use `isValid('myVar')` to check if `myVar` is a valid variable. The function returns `true` if the variable is falsey (eg if `myVar==false` or `myVar==0`). 
+Returns true if variable/anything exists and has a value, or false if it is null/undefined. The argument must be a string. So use `isValid('myVar')` to check if `myVar` is a valid variable. The function returns `true` if the variable is falsy (eg if `myVar==false` or `myVar==0`). 
 
 <hr>
 
@@ -287,7 +287,7 @@ Example on how to use:
 ```JavaScript
 let nextNumber = intGenerator(1)
 ```
-The argument is optional and defines the first integer. If ommited, then it starts at `1`. 
+The argument is optional and defines the first integer. If omitted, then it starts at `1`. 
 
 
 **2nd step**. Call your function (without any arguments) as many times you want: 
@@ -312,7 +312,7 @@ Dim.executeOnce(notify.bind(this."error"))
 
 ### `Dim.executeSparsely(func, minInterval)`
 
-Executes the function `func` only once every `minInterval` milliseconds (optional argument), even if you call it more often. Common use of this is inside eventlisteners (eg `hover`) where you do not want something to run continiousely.
+Executes the function `func` only once every `minInterval` milliseconds (optional argument), even if you call it more often. Common use of this is inside eventlisteners (eg `hover`) where you do not want something to run .
 
 How to use:
 ```JavaScript
@@ -368,8 +368,8 @@ let myAsyncFunction = async () => {
 The use of a function (without () or use `bind`) is the recommended one. But, you can also use one of these:
 ```JavaScript
 await until ('number==1')
-await until ('number') //continues if number is true/truthly
-await until ({number}) //continues if number is true/truthly
+await until ('number') //continues if number is true/truthy
+await until ({number}) //continues if number is true/truthy
 ```
 
 These do not work:
@@ -382,7 +382,7 @@ await until (number)        //does not work
 
 Waits for a condition to be met and, only then, executes a function. `checkInterval` is optional and defined in milliseconds. 
 
-The redommended way to use it is using defined functions:
+The recommended way to use it is using defined functions:
 
 ```JavaScript
 let myCondition = ()=>(number==1)   //gets true if number==1
@@ -393,8 +393,8 @@ setTimeoutUntil(myCondition,callWhenReady)
 Besides the above recommended way, you can also use:
 ```JavaScript
 setTimeoutUntil('number==1',()=>console.log("run"))
-setTimeoutUntil('number',()=>console.log("run")) //run when number gets true/truethly
-setTimeoutUntil({number},()=>console.log("run")) //run when number gets true/truethly   
+setTimeoutUntil('number',()=>console.log("run")) //run when number gets true/truthy
+setTimeoutUntil({number},()=>console.log("run")) //run when number gets true/truthy   
 ```
 These do not work:
 ```JavaScript
