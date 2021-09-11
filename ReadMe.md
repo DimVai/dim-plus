@@ -237,7 +237,7 @@ noDark
 
 ### `Q(element)`
 
-Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.queryElementAll(elements)` and `document.queryElement(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
+Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
 ```JavaScript
 Q('p')      //returns an array of all p elements 
 Q('.btn')   //returns an array of all elements with class "btn"

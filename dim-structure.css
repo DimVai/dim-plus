@@ -69,17 +69,19 @@
 Προσοχή: Τοποθέτηση, όχι στοίχιση (πχ κειμένου με πολλές γραμμές). Βλ. center παραπάνω για στοίχιση. 
 Αν το ύψος του αντικειμένου είναι (καθορισμένα) μεγαλύτερο από τα περιεχόμενα του, τότε αυτά τοποθετούνται στο κέντρο και ως προς τον κατακόρυφο άξονα */
 .center-contents{
-	display: flex;
-	flex-direction: column;	 	/* vertically - one line per item */	
-	justify-content: center; 	/* center vertically - H στοίχηση των παιδιών σαν σύνολο (εφαρμόζεται μόνο αν το ύψος είναι μεγαλύτερο από το ύψος των περιεχομένων) */
-	align-items: center;		/* center horizontally - Αυτό που θέλουμε βασικά - 
-	- το alight items είναι ο άλλος άξονας από το flex direction και είναι η στοίχιση του κάθε παιδιού ξεχωριστά */
+	display: grid;
+	place-items: center;
+	/*display: flex;					/*old way με το ίδιο αποτέλεσμα (ναι, στο space-around αναφέρομαι!) */
+	/*flex-direction: column;	 		/* column=vertically - one line per item */	
+	/*justify-content: space-around; 	/* center vertically - H στοίχηση των παιδιών σαν σύνολο (εφαρμόζεται μόνο αν το ύψος είναι μεγαλύτερο από το ύψος των περιεχομένων) */
+	/*align-items: center;				/* center horizontally - Αυτό που θέλουμε βασικά */
+	/* το alight items είναι ο άλλος άξονας από το flex direction και είναι η στοίχιση του κάθε παιδιού ξεχωριστά */
 }
 
 /* Τοποθέτηση (κι εδώ όχι στοίχιση) περιεχομένων στο κέντρο. Αν είναι πολλά, μπαίνουν όλα στην ίδια γραμμή.*/
 [class*="center-contents"][class*="inline"]{				/* Η κλάση ξεκινάει με center-contents και έχει inline, πχ center-contents-md-inline */
 	display: flex;
-	flex-direction: row;			/* horizontally - all in same line */
+	flex-flow: row wrap;			/* row=horizontally - all in same line if they fit */
 	justify-content: space-around;	/* center horizontally - αντίστροφα από την άλλη κλάση - αυτό που θέλουμε βασικά */
 }
 [class*="inline-middle"]{				/* πχ  center-contents-md-inline-middle */
