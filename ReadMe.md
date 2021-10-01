@@ -228,7 +228,7 @@ noDark
 <hr>
 <hr>
 
-# **dim-plus.js**
+# **dim.js**
 
 
 
@@ -237,28 +237,68 @@ noDark
 
 ### `Q(element)`
 
-Use `Q` to select HTML Elements. Like `$(element)` in `jQuery` and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns an array of elements (or an empty array). Examples:
+Use `Q` to select HTML Elements. It is used similarlly to `$(element)` in `jQuery` and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
 ```JavaScript
-Q('p')      //returns an array of all p elements 
-Q('.btn')   //returns an array of all elements with class "btn"
-Q('#enter') //returns the element with id "enter"
+Q('p')      //returns an array-like object of all p elements 
+Q('.btn')   //returns an array-like object of all elements with class "btn"
+Q('#leave') //returns the element with id "leave"
+```
+
+###  `Create Variables From HTML Ids`
+
+```JavaScript
+createVariablesFromDOM()
+```
+Use this to convert all html elements with `id` to global variables with the same name. Usually, the browser does it itself, but, just in case. Be careful to choose names that are **valid**, not only for html ids, but for JavaScript variables as well.
+After this, you can use for example `leave.innerHTML` instead of `document.getElementById('leave').innerHTML`;
+<hr>
+
+## **Logging to console in development environment**
+### `Console debug, only in local/dev`
+```JavaScript
+log("message")          //console.log("message")
+check()                 // console.debug("check ok"), only in local/dev 
+check("button pressed") //console.debug("button pressed"), only in local/dev
+```
+
+Use these to output something to console. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. `check` logs in console only in local/dev environment
+The logging to console happens only in local/development environment, i.e. when the following variable is `true`':
+### `Check for local/dev`
+```JavaScript
+isDev       //true if the URL begins with 'localhost', '127.0', etc... 
+```
+This is a variable, not a function. You can use it in statements like 
+```JavaScript
+if (isDev) {
+    //code that runs only in local/development environment
+}
 ```
 
 <hr>
 
-## **Variable and prototypes:**
 
+## **Variables and prototypes:**
+
+
+### `Methods for arrays`
 
 ```JavaScript
 Array.last()
 Array.unique()
 Array.numberSort()
 ```
+
 These do what they seem they do! Return the last item of the array (like `pop` without removing it), return an array having only the unique values of the original, and sort an array of numbers numerically. 
 
-### `isValid(variableAsString)`
+### `setCssProperty(variable,value)`
 
-Returns true if variable/anything exists and has a value, or false if it is null/undefined. The argument must be a string. So use `isValid('myVar')` to check if `myVar` is a valid variable. The function returns `true` if the variable is falsy (eg if `myVar==false` or `myVar==0`). 
+
+
+```JavaScript
+setCssProperty('--backColor','red')
+```
+
+Changes easily a CSS variable. Replaces the long function `document.documentElement.style.setProperty`. Don't forget the "`--`"! 
 
 <hr>
 
@@ -267,12 +307,33 @@ Returns true if variable/anything exists and has a value, or false if it is null
 Give it a string with a name of expression/variable. If the expression/variable evaluates, the function returns the evaluation. Else, it returns `false` or the second optional argument.
 ```JavaScript
 let surname = 'Johnes'
-safeEval('surname')                 // 'Johnes'
-safeEval('surName')                 //  false
-safeEval('surName','no surname')    // 'no surname'
+safeEval('surname')                         // 'Johnes'
+safeEval('surName')                         //  false
+safeEval('surName','there is no surname')   // 'there is no surname'
 ```
 
 <hr>
+
+
+
+## **Watch varialbe for changes:**
+
+### `Dim.watch`
+
+```JavaScript
+Dim.watch('myVariable',myCallback)
+```
+This should be used only in development environment, because it creates a `setInterval`, but you can also use it in production enviromnent as well. Use the variable's name as a string (in quotes). The callback function is optional, and console-logs the change if omitted. Write your callback function without "()" or use bind instead.
+
+### `Dim.declareWatchedVariable`
+
+```JavaScript
+//instead of: let myFirstVariable = 12
+declareWatchedVariable('myFirstVariable', 12)  
+//instead of: let mySecondVariable=0
+declareWatchedVariable('mySecondVariable', 0, myCallback) 
+```
+Use this method, instead of `var` or `let` to declare variable that is being watched. The callback function is optional, and console-logs the change if omitted. Write your callback function without "()" or use bind instead. The value is optional and the default value is `null`. 
 
 
 
@@ -398,21 +459,13 @@ setTimeoutUntil({number},()=>console.log("run")) //run when number gets true/tru
 ```
 These do not work:
 ```JavaScript
-setTimeoutUntil(myCondition(),callWhenReady)        //do not use () in either argument. Use bind.
+//do not use () in either argument. Use bind instead.
+setTimeoutUntil(myCondition(),callWhenReady)   //does not work
 setTimeoutUntil(number,callWhenReady)       //does not work
 ```
 
 <hr>
 
-## **Logging to console**
-```JavaScript
-log("message")
-check()
-```
-
-So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`;
-
-<hr>
 
 ## **Cookies**
 

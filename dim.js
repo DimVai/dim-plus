@@ -14,7 +14,7 @@
  * @type {(queryString: string) => HTMLElement[]}  
  */
 var Q = (queryString) => {
-    return queryString.charAt(0)=='#' ? document.querySelector(queryString)||null : document.querySelectorAll(queryString)||[];
+    return queryString.charAt(0)=='#' ? document.querySelector(queryString) : document.querySelectorAll(queryString);
 };
 
 /** 
@@ -24,21 +24,48 @@ var Q = (queryString) => {
 var setCssProperty = (variable,value) => {document.documentElement.style.setProperty(variable, value); return value};
 
 
+/* jshint ignore:start */
+/**
+ * Create variables for every DOM id with the same name. Use only valid javascript variable names in your DOM
+ */
+var createVariablesFromDOM = function(){
+    //document.addEventListener('DOMContentLoaded', ()=>{
+        let IdElements = document.querySelectorAll("[id]");
+        let MapOfElements = new Map();
+        IdElements.forEach(element=> {
+            let ElementID = element.id;
+            try {
+                if (ElementID.includes("-")) {throw error}
+                window[ElementID] = element;
+                if (window[ElementID]!=element) {throw error}
+                MapOfElements.set(ElementID,element);
+            } catch(error){
+                console.error("createVariablesFromDOM() Error: Can't convert this DOM id to a valid variable name: " + ElementID)
+            } 
+        });
+        return MapOfElements;
+    //});
+};
+/* jshint ignore:end */
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////               LOGGING              ////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/** Variable, not function. Δείχνει αν βρισκόμαστε σε local περιβάλλον */
+var isDev = ["localhost","127.0","172.16","10.","192.168."].some((text)=>window.location.hostname.includes(text));
+
 /** Use log instead of console log */
-let log = console.log;
+var log = (message) => { if (isDev) {console.log(message);return message;}};
 
 /**
  * Χρήση σε development περιβάλλον. για να ελέγχεις αν λειτουργεί ο κώδικας, πχ αν γίνεται trigger το κλικ κουμπιού.
- * Γράφεις check(); ή check("button click"); αντί για console.debug(κάτι)...
+ * Σε παραγωγικό περιβάλλον, δεν εμφανίζει τίποτα
+ * Γράφεις check(); ή check("button clicked"); αντί για console.debug(κάτι)...
  * @param {string} message the message to console.debug 
 */
-function check(message = "check ok") {console.debug(message)}
-
+var check = (message = "check ok") => { if (isDev) {console.debug(message); return message;} };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////               WORKING WITH VARIABLES & TYPES              //////////////////////////////////////
@@ -129,9 +156,51 @@ executeAfterRapidFire: (func, waitFor=200) => {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////               RELOADING & GET PARAMETERS            //////////////////////////////////////////
+////////////////////////////////////////////       WATCH VARIABLES FOR CHANGES       /////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+/** Watch a variable for changes and executes a function when the variable changes
+ * @param {string} variableNameInString - the variable. Use its name in quotes (as a string)
+ * @param {function} [callbackFunction] - the callback function. Optional (console.logs the change as default)
+ */
+watch: (variableNameInString, 
+    callbackFunction=()=>{check(variableNameInString+" changed to "+eval(variableNameInString))}) => {
+        try{eval(variableNameInString)}catch{console.error(`${variableNameInString} not initialized in Dim.watch`);return}
+        window["watch_"+variableNameInString] = eval(variableNameInString);
+        setInterval(()=>{
+            if (eval(variableNameInString) != window["watch_"+variableNameInString]) {
+                window["watch_"+variableNameInString] = eval(variableNameInString);
+                callbackFunction();
+            }
+        },200);
+},
+
+/** Use this method, instead let or var, in order to declare a variable that is watched for changes
+ * @param {string} variableName - the variable name. Use its name in quotes (as a string)
+ * @param {any} variableValue - the initial variable's value. Optional (default value is null)
+ * @param {function} [callbackFunction] - the callback function. Optional (console.logs as default)
+ */
+declareWatchedVariable: function(variableName, variableValue=null, 
+    callbackFunction=()=>{check(variableName+" changed to "+eval(variableName))}) {
+        //just for error checking
+        if ( isValid(variableName) ) {
+            console.error(`declareWatchedVariable error: 
+            Variable ${variableName} is already declared. 
+            Use Dim.declareWatchedVariable(${variableName},${variableValue}) instead of var or let`);
+            return;
+        } //end of error checking
+        //and finally the actual useful code!
+        Object.defineProperty(window, variableName, {
+            set: function(value) {window["_"+variableName] = value; callbackFunction()},
+            get: function(x) { return window["_"+variableName]}
+        });
+        window[variableName]=variableValue;
+},
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////               RELOADING & GET PARAMETERS            //////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Refresh/Reload of current page. 
@@ -383,72 +452,4 @@ function getCookie(name) {
 function eraseCookie(name) {   
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////                VARIOUS                /////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-/** Simulate Typing 
- * @type {(placeID: HTMLElement, text:String, interval, nextFunction: any)=> void}
-*/
-function SimulateTyping(placeID, text, interval, nextFunction){
-var i=0;
-var timer = setInterval(function(){
-    document.getElementById(placeID).value += text.charAt(i++);
-        if(i==text.length){
-            clearInterval(timer);
-            nextFunction();
-            //nextFunction;
-        }
-},interval);
-}
-
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////                testing                /////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-
-
-let number = 0;
-// log(varName({test}));
-let myCondition = () => (number==1);
-// setTimeoutUntil(myCondition,()=>log("success!!!"));             //works
-// setTimeoutUntil(myCondition(),()=>log("success!!!"));       //doesn't work
-// setTimeoutUntil('number',()=>log("success!!!"));              //works
-// setTimeoutUntil(number,()=>log("success!!!"));         //doesn't work
-// setTimeoutUntil('number==1',()=>log("success!"));         //works
-// setTimeoutUntil({number},()=>log("success!"));         //works
-
-
-setTimeout(()=> {number++},1500);
-
-let testingUntil = async () => {
-    // await until ('number==10');           //works
-    // await until (number==10);           //does not work
-    // await until (number);      //doesn't work 
-    // await until ('number');          //works
-    // await until ({number});          //works
-    // await until (myCondition);          //works
-    // log("until success!");
-};
-testingUntil();
-
-
-// let surname = 'Johnes';
-// log(safeEval('surname'));                 // 'Johnes'
-// log(safeEval('surName'));                 // false
-// log(safeEval('surName','no surname'));    // 'no surname'
-
 
