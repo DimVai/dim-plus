@@ -290,8 +290,17 @@ Array.numberSort()
 
 These do what they seem they do! Return the last item of the array (like `pop` without removing it), return an array having only the unique values of the original, and sort an array of numbers numerically. 
 
+
 ### `setCssProperty(variable,value)`
 
+
+```JavaScript
+String.test(stringOrRegexp)
+```
+This has the same functionality as` regex.test(string)`, but with different, usually more convinient, syntax. Additionally, you can pass string as a parameter, which has the same functionality as `string.includes(string)`. 
+
+
+### `setCssProperty(variable,value)`
 
 
 ```JavaScript
@@ -337,6 +346,7 @@ Use this method, instead of `var` or `let` to declare variable that is being wat
 
 
 
+
 ## **Integer Generator**
 
 ### `intGenerator()`
@@ -351,12 +361,49 @@ let nextNumber = intGenerator(1)
 The argument is optional and defines the first integer. If omitted, then it starts at `1`. 
 
 
-**2nd step**. Call your function (without any arguments) as many times you want: 
+
+
+
+## **RegExp Utilities**
+
+### `RegularExpression`
+
+Use them with the `test` Javascript function. If you use them with `match` function, you may need to add `/g` or other flags. These are designed to be used with the `RegExp.test(String)` function or the `String.test(RegExp)` function that is defined in this 
+
 ```JavaScript
-nextNumber()  //returns 1
-nextNumber()  //returns 2
-nextNumber()  //returns 3
+//this RegExp returns true if the string contains "oneString"
+RegularExpression.Contains(oneString)    
+//returns: .*oneString.*
+
+//this RegExp returns true if the string contains one of the two strings
+RegularExpression.Contains(firstString,secondString)   
+//returns:  .*(firstString|secondString).*
+
+//this RegExp returns true if the string contains none of the strings
+RegularExpression.ContainsNot(firstString,secondString)
+
+//you get the idea!
+RegularExpression.StartsWith(firstString,secondString)
+RegularExpression.StartsWithNot(firstString,secondString)
+RegularExpression.EndsWith(firstString,secondString)
+RegularExpression.EndsWithNot(firstString,secondString)
+
+//this RegExp returns true if the string contains one of the strings of the firstArray AND none of the strings of the secondArray
+RegularExpression.ContainsWhileDoesNotContain(firstArray,secondArray)
+
+//this RegExp returns true
+RegularExpression.Everything()      //returns .*
 ```
+
+How to use them:
+```JavaScript
+"this string is somewhat weird" .test(RegularExpression.Contains(["someone","somewhat"])) 
+//true, because the string contains "somewhat" or "someone"
+
+"this string is somewhat weird" .test(RegularExpression.ContainsWhileDoesNotContain(["someone","somewhat"],["something"])) 
+//true, because the string contains "somewhat" or "someone" while does not contain "something". 
+```
+Of course you can use the official `test()` property of a `RegExp` type. 
 
 <hr>
 

@@ -83,11 +83,8 @@ Array.prototype.sortByNumber = function() {
     return Array.from(numArray.sort());         //create new array from sorted numArray
 };
 
-/** Returnes (but not changes) the opposite value of a boolean */
-// var toggle = (booleanVariable, defaultValue = false) => {
-//     booleanVariable = booleanVariable ?? !defaultValue;     // jshint ignore:line 
-//     return !booleanVariable;
-//   };
+/** string.test(regexp|string) has the same functionality as regexp.test(string). */
+String.prototype.test = function(reg) {return (reg instanceof RegExp) ? reg.test(this) : this.includes(reg)};
 
 /** Creates an integer generator. How to Use: let nextNumber = intGenerator(1); console.log(nextNumber()); */
 let intGenerator = (int=1) => () => int++;      //if no parameter, first number is 1. 
@@ -198,6 +195,7 @@ declareWatchedVariable: function(variableName, variableValue=null,
 },
 
 
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////               RELOADING & GET PARAMETERS            //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -303,6 +301,33 @@ load: (target, url) => {
 
 };
 //end of Public Object 
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////          REGEXP UTILITIES          //////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+let RegularExpression = {
+
+    regWords : (input) => {
+        return Array.isArray(input) ? input.join('|') : input;
+      },
+
+    Everything() {return new RegExp('.*')},
+    Contains(array) {return new RegExp('.*('+this.regWords(array)+').*')},
+    ContainsNot(array) {return new RegExp('^(?!.*('+this.regWords(array)+')).*')},
+    StartsWith(array) {return new RegExp('^('+this.regWords(array)+').*')}, 
+    StartsWithNot(array) {return new RegExp('^(?!'+this.regWords(array)+').*')}, 
+    EndsWith(array) {return new RegExp('.*('+this.regWords(array)+')$')}, 
+    EndsWithNot (array) {return new RegExp('.*(?<!'+this.regWords(array)+')$')}, 
+    ContainsWhileDoesNotContain: function(containsArray, doesNotContainArray=null) {
+        return (doesNotContainArray==null) 
+            ? this.Contains(containsArray) 
+            : new RegExp( '^(?!.*('+this.regWords(doesNotContainArray)+')).*('+this.regWords(containsArray)+').*$' )},
+};
 
 
 
