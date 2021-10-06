@@ -237,7 +237,7 @@ noDark
 
 ### `Q(element)`
 
-Use `Q` to select HTML Elements. It is used similarlly to `$(element)` in `jQuery` and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then this returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
+Use `Q` to select HTML Elements. It is used similarly to `$(element)` in `jQuery` (however, it returns DOM elements, not jQuery elements),and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then `Q` returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
 ```JavaScript
 Q('p')      //returns an array-like object of all p elements 
 Q('.btn')   //returns an array-like object of all elements with class "btn"
@@ -261,13 +261,18 @@ check()                 // console.debug("check ok"), only in local/dev
 check("button pressed") //console.debug("button pressed"), only in local/dev
 ```
 
-Use these to output something to console. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. `check` logs in console only in local/dev environment
+Use these to output something to console. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. 
+
+`check` logs in console only in local/dev environment. 
 The logging to console happens only in local/development environment, i.e. when the following variable is `true`':
+
 ### `Check for local/dev`
 ```JavaScript
 isDev       //true if the URL begins with 'localhost', '127.0', etc... 
 ```
+
 This is a variable, not a function. You can use it in statements like 
+
 ```JavaScript
 if (isDev) {
     //code that runs only in local/development environment
@@ -291,13 +296,14 @@ Array.numberSort()
 These do what they seem they do! Return the last item of the array (like `pop` without removing it), return an array having only the unique values of the original, and sort an array of numbers numerically. 
 
 
-### `setCssProperty(variable,value)`
-
+### `String.test(RegExp)`
 
 ```JavaScript
 String.test(stringOrRegexp)
 ```
-This has the same functionality as` regex.test(string)`, but with different, usually more convinient, syntax. Additionally, you can pass string as a parameter, which has the same functionality as `string.includes(string)`. 
+This has the same functionality as` regex.test(string)`, but with different (usually more convenient) syntax. See below for ready Regular Expressions that `dim.js` provides. 
+
+Additionally, you can pass string as a parameter, which has the same functionality as `string.includes(string)`. 
 
 
 ### `setCssProperty(variable,value)`
@@ -309,7 +315,6 @@ setCssProperty('--backColor','red')
 
 Changes easily a CSS variable. Replaces the long function `document.documentElement.style.setProperty`. Don't forget the "`--`"! 
 
-<hr>
 
 ### `safeEval(expressionAsString)`
 
@@ -325,34 +330,42 @@ safeEval('surName','there is no surname')   // 'there is no surname'
 
 
 
-## **Watch varialbe for changes:**
+## **Watch variables for changes:**
 
 ### `Dim.watch`
 
 ```JavaScript
 Dim.watch('myVariable',myCallback)
 ```
-This should be used only in development environment, because it creates a `setInterval`, but you can also use it in production enviromnent as well. Use the variable's name as a string (in quotes). The callback function is optional, and console-logs the change if omitted. Write your callback function without "()" or use bind instead.
+This should be used only in development environment, because it creates a `setInterval` under the hood. You can also use it in production enviromnent as well, but it is not recommended. Use the variable's name as a string (in quotes). The callback function is optional, and console-logs the change if omitted. Write your callback function without "()", or use bind instead.
 
-### `Dim.declareWatchedVariable`
+### `new WatchedVariable(variableName,initialValue,callbackFunction);`
 
 ```JavaScript
 //instead of: let myFirstVariable = 12
-declareWatchedVariable('myFirstVariable', 12)  
-//instead of: let mySecondVariable=0
-declareWatchedVariable('mySecondVariable', 0, myCallback) 
+new WatchedVariable('myFirstVariable', 12)  
+//instead of: let mySecondVariable = 0
+let watchedObject = new WatchedVariable('mySecondVariable', 0, myCallback) 
 ```
-Use this method, instead of `var` or `let` to declare variable that is being watched. The callback function is optional, and console-logs the change if omitted. Write your callback function without "()" or use bind instead. The value is optional and the default value is `null`. 
+
+Different approaches to declare new variables that will be watched for changes. 
+
+See live example here: https://codepen.io/dimvai/pen/QWgXmdY
+
+Use this method, instead of `var` or `let` to declare a variable that will be watched for changes. (You don't have name the created object, like the second `watchedObject` example. In fact, you are advised not to!). 
+
+The `variableName` must be a string in quotes. 
+The `callback` function is optional, and console-logs the change if omitted. Write your callback function without "()", or use bind instead. The variable's `initialValue` is optional and the default value is `null`. 
 
 
-
+<hr>
 
 ## **Integer Generator**
 
 ### `intGenerator()`
 
 Creates an integer generator. Every time you call it, it returns the next integer. 
-Example on how to use:
+Example on how to use: https://codepen.io/dimvai/pen/xxdamLb
 
 **1st step**. Define your function:
 ```JavaScript
@@ -361,6 +374,14 @@ let nextNumber = intGenerator(1)
 The argument is optional and defines the first integer. If omitted, then it starts at `1`. 
 
 
+**2nd step**. Call your function (without any arguments) as many times you want: 
+```JavaScript
+nextNumber()  //returns 1
+nextNumber()  //returns 2
+nextNumber()  //returns 3
+```
+
+<hr>
 
 
 
@@ -368,7 +389,9 @@ The argument is optional and defines the first integer. If omitted, then it star
 
 ### `RegularExpression`
 
-Use them with the `test` Javascript function. If you use them with `match` function, you may need to add `/g` or other flags. These are designed to be used with the `RegExp.test(String)` function or the `String.test(RegExp)` function that is defined in this 
+Use them with the `test` Javascript function. If you use them with `match` function, you may need to add `/g` or other flags. These are designed to be used with the `RegExp.test(String)` function or the `String.test(RegExp)` function that is defined in this `dim.js`.
+
+Live example here: https://codepen.io/dimvai/pen/MWodGmv
 
 ```JavaScript
 //this RegExp returns true if the string contains "oneString"
@@ -392,7 +415,7 @@ RegularExpression.EndsWithNot(firstString,secondString)
 RegularExpression.ContainsWhileDoesNotContain(firstArray,secondArray)
 
 //this RegExp returns true
-RegularExpression.Everything()      //returns .*
+RegularExpression.Everything()      //returns: .*
 ```
 
 How to use them:
@@ -420,7 +443,7 @@ Dim.executeOnce(notify.bind(this."error"))
 
 ### `Dim.executeSparsely(func, minInterval)`
 
-Executes the function `func` only once every `minInterval` milliseconds (optional argument), even if you call it more often. Common use of this is inside eventlisteners (eg `hover`) where you do not want something to run .
+Executes the function `func` only once every `minInterval` milliseconds (optional argument), even if you call it more often. Common use of this is inside event listeners (eg `hover`) where you do not want something to run .
 
 How to use:
 ```JavaScript
@@ -430,7 +453,7 @@ Dim.executeSparsely(notify.bind(this."error"),2000)
 
 ### `Dim.executeAfterRapidFire(func, waitFor) `
 
-Executes the function only after it has stopped being called for an interval of `waitFor` milliseconds (optional argument). Examples (inside an `eventlistener`):
+Executes the function only after it has stopped being called for an interval of `waitFor` milliseconds (optional argument). Examples (inside an `event listener`):
 ```JavaScript
 Dim.executeAfterRapidFire(updateDiv,500), 
 Dim.executeAfterRapidFire(notify.bind(this."error"),2000)

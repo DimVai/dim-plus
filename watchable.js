@@ -29,13 +29,18 @@ var declareWatchedVariable = function(variableName, variableValue=null, callback
 };
 
 //var myVar = 13;  //uncomment this to test for errors
-//let myVar = 13;  //uncomment this to test for errors
-declareWatchedVariable('myVar', 12);       //instead of:   var myVar = 12 ;
-myVar = 15;
+//let myVar = 0;  //uncomment this to test for errors
+new WatchedVariable('myVar', 12);       //instead of:   var myVar = 12 ;
+myVar = 21;
+myVar++;
+myVar = 21;
 myVar++;
 
-declareWatchedVariable('mySecondVar', 0, ()=>console.log("mySecondVar changed"));
+//new WatchedVariable('myVar', 12); //uncomment for testing
+
+let WatchedObject =  new WatchedVariable('mySecondVar', 0, ()=>console.log("mySecondVar changed"));
 mySecondVar++;
+console.log(WatchedObject);
 
 
 

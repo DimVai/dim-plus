@@ -331,6 +331,35 @@ let RegularExpression = {
 
 
 
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////          WATCHED VARIABLE          //////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/** 
+ * Create a watched variable this way instead of let/var: 
+ * new WatchedVariable(variableName,initialValue,callbackFunction)
+ * Example: https://codepen.io/dimvai/pen/QWgXmdY
+ */
+class WatchedVariable {
+    /**
+     * @param {string} variableName
+     * @param {any} initialValue
+     * @param {Function} callbackFunction
+     */
+    constructor(variableName,initialValue,callbackFunction){
+        //set default values if missing
+        initialValue ??= null;   /* jshint ignore:line */
+        callbackFunction ??= function(){console.log(variableName+" changed to " + window[variableName])};  /* jshint ignore:line */
+        //and now the actual useful code!
+        Object.defineProperty(window, variableName, {
+            set: function(value) {window["_"+variableName] = value||null; callbackFunction()},
+            get: function() {return window["_"+variableName]}
+        });
+        window[variableName]=initialValue;
+        Object.assign(this, {variableName,initialValue,callbackFunction});
+    }
+}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////                EXECUTE MULTIPLE TIMES            /////////////////////////////////////////////
