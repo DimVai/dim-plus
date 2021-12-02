@@ -235,35 +235,138 @@ noDark
 ## **Selecting HTML Elements**
 
 
-### `Q(element)`
+### `Q(queryString)`
 
-Use `Q` to select HTML Elements. It is used similarly to `$(element)` in `jQuery` (however, it returns DOM elements, not jQuery elements),and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `id` then `Q` returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a class, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
+Use `Q` to select HTML Elements. It is used similarly to `$(elements)` in `jQuery`. However, it returns DOM elements, not jQuery elements),and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `#id` then `Q` returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a `.class`, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
 ```JavaScript
 Q('p')      //returns an array-like object of all p elements 
 Q('.btn')   //returns an array-like object of all elements with class "btn"
-Q('#leave') //returns the element with id "leave"
+Q('#send') //returns the element with id "send"
+```
+In the case of an `#id` (single element), you can also use the following **additional** methods that are now available:
+```JavaScript
+/***  Display and CSS  ***/
+Q('#message').hide()                       //hides the element (display none)
+Q('#message').show()                       //shows the element if hidden (display revert)
+Q('#message').addClass('className')        //add a class to an element
+Q('#message').removeClass('className')     //remove a class from an element
+Q('#message').toggleClass('className')     //toggle a class to an element   
+
+//replaces the text (textContent) of an element
+Q('#message').set(text)            
+//when 'html', it replaces the innerHTML of an element          
+Q('#message').set(richText,'html')           
+
+//Makes a GET request from a URL, and then replaces 
+//the text of `#textFromOuside` with the GET response. 
+Q('#textFromOuside').fetch(URL)                     
+//If the result is an object (and not a singe value), 
+//you must specify the second argument (pathFunction) as a funtion of it:
+Q('#textFromOuside').fetch(URL,resObj=>resObj.key)
+ //Sends a POST request to URL sending an object with the value of #textArea. 
+ //The data is in the format: {parameterName:valueOfInput}
+Q('#textArea').post(URL,parameterName)         
+
+/***  Event listeners  ***/
+Q('#menuItem').on(event,callback)                   //on=eventlistener
+Q('#menuItem').onClick(callback)                    //eventlistener('click',...
+Q('#menuItem').onInputChange(callback)              //eventlistener('input,...
+//onkeydown using the special keyString variable, defined below. example:
+Q('#menuItem').onKeyboard(function(keyString){
+    if (keyString="Ctrl+S") {/*save the item to database*/}
+})
 ```
 
-###  `Create Variables From HTML Ids`
+In the case of `Q(window)` or `Q(document)`, only `on` and `onKeyboard` are added to its standard methods. 
+
+In the case of an element name (like `p` or `li`) or a `.class` the result is a NodeList that is generally difficult to use. So, you can use the following added methods:
 
 ```JavaScript
-createVariablesFromDOM()
+/***  Display and CSS   ***/
+Q('.symbols').hide()                      //hides all elements
+Q('.symbols').show()                      //shows all elements if hidden (display revert)
+Q('.alerts').addClass('className')        //add a class to all elements
+Q('.alerts').removeClass('className')     //remove a class from all elements
+Q('.alerts').toggleClass('className')     //toggle a class to all elements   
+
+//replaces the text (textContent) of all elements
+Q('.className').set(text)            
+//when 'html', it replaces the innerHTML of all elements          
+Q('#className').set(richText,'html')           
+
+//on=eventlistener on all elements
+Q('#menuItem').on(event,callback)   
+
+
+// DO SOMETHING TO ALL ELEMENTS OF NODELIST:
+
+//  1. For custom functions on all elements  -  Use map or forEach as usual. 
+// * Note that NodeList does not support map. It is an added method!
+//array of firstWord of paragraphs 
+Q(".mainParagraph").map(parapraph=>firstWord(paragraph))         
+
+//  2. For single properties  -  Just use the property!
+Q(".mainParagraph").title               //an array of the titles of all elements!
+Q(".mainParagraph").firstChild          //an array of the firstChilds(!) of all elements!
+Q(".mainParagraph").outerHTML = `some html`;    //sets all elements' outerHTML!
+//this does not work with nested properties:
+Q(".mainParagraph").firstChild.innerHTML        //error! Use map instead. 
+
+//  3. For methods  -  Use .each
+//get an array of the data-testAttr of all elements!
+Q(".someClass").each.getAttribute('data-someAttr')  
+//change or set the data-testAttr of all elements! 
+Q(".someClass").each.setAttribute('data-someAttr','new value')
 ```
-Use this to convert all html elements with `id` to global variables with the same name. Usually, the browser does it itself, but, just in case. Be careful to choose names that are **valid**, not only for html ids, but for JavaScript variables as well.
-After this, you can use for example `leave.innerHTML` instead of `document.getElementById('leave').innerHTML`;
+
 <hr>
 
-## **Logging to console in development environment**
-### `Console debug, only in local/dev`
+
+
+
+## **Navigation, URL, Get parameters**
+
+
+### `Dim.Nav`
+
+Dim.Nav is a set of methods for easy window/URL manipulation. It has METHODS, not vairables, so it it is updated with the current (updated) parameters when client routing.
+Examples of methods:
 ```JavaScript
-log("message")          //console.log("message")
+//returns the value of the GET parameter of the URL
+Dim.Nav.GetParameters('gameId')       
+//If parameter not defined, it returnes all GET parameters in a key-value object.
+Dim.Nav.GetParameters()  
+
+//Refreshes current page (optionalparameter)
+Dim.Nav.RefreshWindow()
+Dim.Nav.RefreshWindow(false)       //refresh and get rid of get parameters
+
+//return the current full URL, only the domain, or only the local (relative) path
+Dim.Nav.URL()
+Dim.Nav.domain()
+Dim.Nav.path()
+
+//Used in client-side routing. 
+//Changes URL in the URL bar, so a new item is also created in browser's history
+Dim.Nav.CreateNewState(localPath)
+//Then, you need to use window.onpopstate to tell the browser what to do 
+//when the uses presses back or forward, because no "real new" page was loaded. 
+
+```
+
+<hr>
+
+
+## **Logging to console in development environment**
+### `Console log/debug only in local/dev`
+```JavaScript
+log("message")          //console.log("message"), only in local/dev 
 check()                 // console.debug("check ok"), only in local/dev 
 check("button pressed") //console.debug("button pressed"), only in local/dev
 ```
 
 Use these to output something to console. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. 
 
-`check` logs in console only in local/dev environment. 
 The logging to console happens only in local/development environment, i.e. when the following variable is `true`':
 
 ### `Check for local/dev`
@@ -339,24 +442,6 @@ Dim.watch('myVariable',myCallback)
 ```
 This should be used only in development environment, because it creates a `setInterval` under the hood. You can also use it in production enviromnent as well, but it is not recommended. Use the variable's name as a string (in quotes). The callback function is optional, and console-logs the change if omitted. Write your callback function without "()", or use bind instead.
 
-### `new WatchedVariable(variableName,initialValue,callbackFunction);`
-
-```JavaScript
-//instead of: let myFirstVariable = 12
-new WatchedVariable('myFirstVariable', 12)  
-//instead of: let mySecondVariable = 0
-let watchedObject = new WatchedVariable('mySecondVariable', 0, myCallback) 
-```
-
-Different approaches to declare new variables that will be watched for changes. 
-
-See live example here: https://codepen.io/dimvai/pen/QWgXmdY
-
-Use this method, instead of `var` or `let` to declare a variable that will be watched for changes. (You don't have name the created object, like the second `watchedObject` example. In fact, you are advised not to!). 
-
-The `variableName` must be a string in quotes. 
-The `callback` function is optional, and console-logs the change if omitted. Write your callback function without "()", or use bind instead. The variable's `initialValue` is optional and the default value is `null`. 
-
 
 <hr>
 
@@ -382,6 +467,43 @@ nextNumber()  //returns 3
 ```
 
 <hr>
+
+
+
+## **Keyboard Event Listeners**
+
+### `KeyString(keyEvent)`
+
+A function that returns a *human-friendly* way to detect what keyboard keys or combinations are pressed during eventlisteners.
+For example, you can check if user has pressed Ctrl+Z easily:
+```JavaScript
+if (KeyString(e)=="Ctrl+Z")      //instead of: if (e.keyCode == 90 && e.ctrlKey)
+```
+
+Other examples:
+
+```JavaScript
+document.addEventListener("keydown",function(keyEvent){
+    let keyString = KeyString(keyEvent);
+    if (keyString == "Alt+U"){
+        //do something
+    } else if (keyString == "Ctrl+S"){
+        keyEvent.preventDefault();      //Do not use the default browser "Save website as"
+        //Code for Saving user's data in database
+    }
+});
+inputText.addEventListener("keydown",function(keyEvent){
+    if (KeyString(keyEvent)=='Ctrl+Shift+A') {
+        //code
+    } else if (KeyString(keyEvent)=='Alt+Ctrl+Shift+Q') {
+        //code
+    }
+});
+```
+You can check out what KeyString outputs here: https://codepen.io/dimvai/pen/KKvZMoL
+
+<hr>
+
 
 
 
@@ -496,7 +618,7 @@ let myAsyncFunction = async () => {
 }
 ```
 
-The use of a function (without () or use `bind`) is the recommended one. But, you can also use one of these:
+The use of a function (without () or with the use of `bind`) is the recommended one. But, you can also use one of these:
 ```JavaScript
 await until ('number==1')
 await until ('number') //continues if number is true/truthy

@@ -5,7 +5,7 @@
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////               SHORTCUTS              ///////////////////////////////////
+///////////////////////////////////          SELECTORS - VARIABLES         ///////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -13,21 +13,109 @@
  * Returns the HTML Element(s) from DOM like jQuery's $.
  * @type {(queryString: string) => HTMLElement[]}  
  */
-var Q = (queryString) => {
-    return queryString.charAt(0)=='#' ? document.querySelector(queryString) : document.querySelectorAll(queryString);
+let Q = (selector) => {
+ 
+    let dimQuery = 'dimQuery';
+    if ([document,window].includes(selector) || selector.charAt(0)=='#') {      //if selector is only one item
+      
+        let element = [document,window].includes(selector)?selector:document.querySelector(selector);     
+      
+        if (element.hasOwnProperty(dimQuery)){          //already OK
+            return element;
+        } else {
+
+           if (![document,window].includes(selector)){
+      
+              element.hide ??= function(){element.style.display="none";return element}          // jshint ignore:line
+              element.show ??= function(){element.style.display="revert";return element}        // jshint ignore:line
+              element.addClass ??= function(className){element.classList.add(className);return element}     // jshint ignore:line
+              element.removeClass ??= function(className){element.classList.remove(className);return element}   // jshint ignore:line
+              element.toggleClass ??= function(className){element.classList.toggle(className);return element}   // jshint ignore:line
+
+              element.set ??= function(content,html=false) // jshint ignore:line
+                  {html?element.innerHTML=content:element.textContent=content;return element}       // jshint ignore:line
+
+              element.fetch ??= function(URL,pathFunction){return fetch(URL)       /* jshint ignore:line  */  //return, so user can use "then" 
+                .then(response=>{try{return response.json()}catch{return response.text()}})
+                .then(data=>element.set(pathFunction?pathFunction(data):data))} // jshint ignore:line
+              element.post ??= function(URL,parameterName){return fetch(URL,         /* jshint ignore:line  */
+                  {method:'POST', 
+                   headers:{'Content-Type':'application/json'}, 
+                   body:JSON.stringify({[parameterName]:element.value}) // jshint ignore:line
+                  })}
+             
+              element.onClick ??= function(callback){element.addEventListener('click',callback);return element}     /* jshint ignore:line  */
+              //no "click", so you can simulate click with el.click(), or else, infinite loop! 
+              element.onInputChange ??= function(callback){element.addEventListener('input',callback);return element}    /* jshint ignore:line  */
+                                                         
+          } //end of document/window if 
+              element.on ??= function(event,callback){element.addEventListener(event,callback);return element}   /* jshint ignore:line  */
+              element.onKeyboard ??= function(callback){element.addEventListener("keydown",function(keyEvent){   /* jshint ignore:line  */
+                callback.call(element,keyEvent,KeyString(keyEvent));        /* jshint ignore:line  */
+                return element;
+              //not simply: callback(KeyString(keyEvent)). so the user can have access to "this" element. 
+            })}
+
+            element[dimQuery] = true;
+            return element;
+            }
+
+    } else {            //user selects class or NodeList
+      
+        let selectorProxy = selector.replaceAll(' ','_');
+        if (window.hasOwnProperty(selectorProxy)) { 
+            return window[selectorProxy];
+        }
+        else {
+            let elements = document.querySelectorAll(selector);
+            elements.nodeList = elements.itself = elements;
+            elements.hide ??= function(){elements.forEach(el=>el.style.display="none");return elements}      /* jshint ignore:line  */
+            elements.show ??= function(){elements.forEach(el=>el.style.display="revert");return elements}    /* jshint ignore:line  */
+            elements.addClass ??= function(className){elements.forEach(el=>el.classList.add(className));return elements}     /* jshint ignore:line  */
+            elements.removeClass ??= function(className){elements.forEach(el=>el.classList.remove(className));return elements}   /* jshint ignore:line  */
+            elements.toggleClass ??= function(className){elements.forEach(el=>el.classList.toggle(className));return elements}   /* jshint ignore:line  */
+            elements.on ??= function(event,callback){elements.forEach(el=>el.addEventListener(event,callback));return elements}  /* jshint ignore:line  */
+            elements.set ??= function(content,html=false){html?elements.forEach(el=>el.innerHTML=content):elements.forEach(el=>el.textContent=content);return elements}  /* jshint ignore:line  */
+
+            //1. for functions, map,forEach
+            elements.map = function(func){return [...elements].map(func)};
+
+            //2. proxy for properties => refer to its children if nodeList does not have this property 
+            let propertyProxy = new Proxy(elements, {
+              get(o,property){
+                  if (property in o) {return o[property]}     //όχι o.hasOwnProperty(property) διότι δεν κοιτάει proto, px length
+                  else { return o.map(el=>el[property]??el.getAttribute(property)) }     /* jshint ignore:line  */
+              },
+              set(o,property,value){
+                  if (property in o) {o[property]=value} //if nodeList property
+                  else { o.forEach(el=>{
+                      if(el.hasOwnProperty(property)){el[property]=value}else{el.setAttribute(property,value)}
+                  })}
+                  return value;
+              },
+            });
+
+            //3. proxy for methods => refer to its children
+            elements.each = new Proxy(elements, {
+              get(o, method) {        //(περιλαμβάνει πχ το getAttribute και το setAttribute//
+                return function() { return o.map(el=>el[method].apply(el,arguments)) }; 
+                //return method στην ουσία, και μέσα πάλι return και map αντί για foreach
+                //γιατί κάποιες επιστρέφουν και κάποιες θέτουν πχ getAttribute, setAttribute
+              }
+            });
+
+            window[selectorProxy] = propertyProxy;
+            return propertyProxy;
+            }
+    }
+
 };
 
-/** 
- * Change the value of a css variable 
- * @type {(variable: string, value: string) => string}  
- */
-var setCssProperty = (variable,value) => {document.documentElement.style.setProperty(variable, value); return value};
 
 
-/* jshint ignore:start */
 /**
  * Create variables for every DOM id with the same name. Use only valid javascript variable names in your DOM
- */
+ */ /*
 var createVariablesFromDOM = function(){
     //document.addEventListener('DOMContentLoaded', ()=>{
         let IdElements = document.querySelectorAll("[id]");
@@ -46,7 +134,7 @@ var createVariablesFromDOM = function(){
         return MapOfElements;
     //});
 };
-/* jshint ignore:end */
+*/
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +171,16 @@ Array.prototype.sortByNumber = function() {
     return Array.from(numArray.sort());         //create new array from sorted numArray
 };
 
+/** Convertes something to a number */
+let numberOf = whatever => isNaN(whatever) ? 0 : (whatever||0);
+
+/** sum of an array of numebers  */
+Array.prototype.sum = function(){
+    let Sum = 0;
+    this.forEach(value => {Sum += +numberOf(value)});
+    return Sum;
+  };
+
 /** string.test(regexp|string) has the same functionality as regexp.test(string). */
 String.prototype.test = function(reg) {return (reg instanceof RegExp) ? reg.test(this) : this.includes(reg)};
 
@@ -100,6 +198,20 @@ let safeEval = (expressionAsString, valueIfInvalid=false) => {
     }catch{return valueIfInvalid}
 };
 
+
+let KeyString = (keyEvent) => {
+    //key = last button pressed. Eg Ctrl+Shift+Z=>Z, Ctrl+Shift=>Shift
+    let key = keyEvent.key.replace("Control", "Ctrl");  //keyEvent.key. But replace Control with Ctrl
+    if (!keyEvent.ctrlKey && !keyEvent.altKey) {return key}   //if no Ctrl or Alt is pressed. Shift+a=>A, σ=>σ
+  
+    // so, Ctrl or Alt is pressed. code is the hardware button id (not the letter)
+    if (key.length==1) {key=keyEvent.code.replace('Key','')}     //if letter (not 'Home' or 'Escape'). Ctrl+R instead of Ctrl+r,Ctrl+ρ, 
+    let pre = '';
+    if (keyEvent.altKey && key!="Alt") {pre+='Alt+'}        //if Alt was pressed from before but not this (the last) one
+    if (keyEvent.ctrlKey && key!="Ctrl") {pre+='Ctrl+'}    //user can press alt+ctrl+shift+d
+    if (keyEvent.shiftKey && key!="Shift") {pre+='Shift+'}    //[Ctrl,Alt]+Shift+κάτι
+    return pre+key;
+};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////                 EXECUTIONS              /////////////////////////////////////////////////
@@ -177,6 +289,7 @@ watch: (variableNameInString,
  * @param {any} variableValue - the initial variable's value. Optional (default value is null)
  * @param {function} [callbackFunction] - the callback function. Optional (console.logs as default)
  */
+/*
 declareWatchedVariable: function(variableName, variableValue=null, 
     callbackFunction=()=>{check(variableName+" changed to "+eval(variableName))}) {
         //just for error checking
@@ -192,31 +305,22 @@ declareWatchedVariable: function(variableName, variableValue=null,
             get: function(x) { return window["_"+variableName]}
         });
         window[variableName]=variableValue;
-},
+},*/
 
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////               RELOADING & GET PARAMETERS            //////////////////////////////////////////
+///////////////////////////////////////               NAVIGATION & GET PARAMETERS            //////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- * Refresh/Reload of current page. 
- * @param {boolean} [keepGetParameters] - Optional. If true, then keeps the get parameters. Default=false
- */
- refreshWindow: (keepGetParameters = true) => {
-    if (keepGetParameters){
-        window.location.reload();
-    } else {
-        location.replace(window.location.origin + window.location.pathname);
-    }
-  },
 
 /**
+ * Old Code
  * Returns an Object with the current URL's GET parameters in key-value format
  * https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript
 * @type {{}} Object with key values 
  */
+/*
 GetParameters: () => {
     var urlParams;
     var match,
@@ -230,7 +334,47 @@ GetParameters: () => {
         {urlParams[decode(match[1])] = decode(match[2])}
     return urlParams;
 },
+*/
 
+/** Dim.Nav is a set of methods for easy window/URL manipulation 
+ * It has METHODS, not vairables, so it it is UPDATED with the current (updated) parameters when client routing.
+*/
+Nav: {
+
+    // jshint ignore:start
+    /** 
+     * Returns the URL's GET parameter. If parameter not defined, it returnes all parameters in a key-value object.
+     */
+    GetParameters: (parameter=null) => parameter 
+        ? Object.fromEntries(new URLSearchParams(window.location.search).entries())[parameter] ?? null  
+        : Object.fromEntries(new URLSearchParams(window.location.search).entries()),
+    // jshint ignore:end 
+
+    /**
+     * Refresh/Reload of current page. 
+     * @param {boolean} [keepGetParameters] - Optional. If true, then keeps the get parameters. Default=false
+     */
+    RefreshWindow: (keepGetParameters = true) => {
+        if (keepGetParameters){
+            window.location.reload();
+        } else {
+            location.replace(window.location.origin + window.location.pathname);
+        }
+    },
+
+    URL: () => window.location.href,
+    domain: () => window.location.hostname,
+    path: () => window.location.pathname,
+
+    /** 
+     * Changes URL in the URL bar, so a new item is also created in browser's history 
+     * Then, use window.onpopstate to tell the browser what to do when the uses presses back or forward 
+    */
+    CreateNewState: (localPath) =>{
+        history.pushState({},"",localPath);
+    },
+
+},
 
 
 
@@ -262,7 +406,7 @@ LazyLoadImages: (delay=1) => {
 /**
  * Loads a .CSS or .JS file. Needs JQuery 
  * @param {URL} resourceURL Path of .js or .css file
- * @param {number} delay Delay in seconds. Optinal. Default=0 
+ * @param {number} delay Delay in seconds. Optional. Default=3 
  */
 LazyLoadResource: (resourceURL, delay = 3) => {
     let resourceExtention = resourceURL.split('.').pop();       //CSS or JS?
@@ -340,16 +484,17 @@ let RegularExpression = {
  * new WatchedVariable(variableName,initialValue,callbackFunction)
  * Example: https://codepen.io/dimvai/pen/QWgXmdY
  */
+/*
 class WatchedVariable {
     /**
      * @param {string} variableName
      * @param {any} initialValue
      * @param {Function} callbackFunction
-     */
+     *//*
     constructor(variableName,initialValue,callbackFunction){
         //set default values if missing
-        initialValue ??= null;   /* jshint ignore:line */
-        callbackFunction ??= function(){console.log(variableName+" changed to " + window[variableName])};  /* jshint ignore:line */
+        initialValue ??= null;   //jshint ignore:line //
+        callbackFunction ??= function(){console.log(variableName+" changed to " + window[variableName])};  //jshint ignore:line //
         //and now the actual useful code!
         Object.defineProperty(window, variableName, {
             set: function(value) {window["_"+variableName] = value||null; callbackFunction()},
@@ -358,7 +503,7 @@ class WatchedVariable {
         window[variableName]=initialValue;
         Object.assign(this, {variableName,initialValue,callbackFunction});
     }
-}
+}*/
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -403,11 +548,11 @@ const varName = varAsObject => Object.keys(varAsObject)[0];
 /** Evaluates a variable, function, or string condition. Returns a boolean */
 const checkFor = condition => {
     if (typeof condition === 'function'){
-        if (condition()) {return true}           //Όχι: return condition(). Δεν θέλω να επιστρέφει την condition ως συνάρτηση.  
+        if (condition()) {return true}           //Όχι: return condition(). Δεν θέλω να επιστρέφει την condition / αποτέλεσμα/συνάρτησης.  
     } else if (typeof(condition) === 'object') {
         if (eval(varName(condition))) {return true}
     } else {
-        try {return eval(condition)}catch{throw "Condition is not valid";} 
+        try {return eval(condition)}catch{throw "Condition is not valid";}  //κι εδώ όμως θέλει με την ίδια λογική
     }
     return false;      //if everything fails
 };
@@ -507,3 +652,57 @@ function eraseCookie(name) {
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
+
+/**
+ * ALL FUNCTIONS:
+ * 
+ * Q(queryString)
+ * createVariablesFromDOM()  //deprecated
+ * 
+ * isDev // variable (not function)
+ * log
+ * check
+ * 
+ * Array.prototype.last
+ * Array.prototype.unique
+ * Array.prototype.sortByNumber
+ * numberOf     // convert to number
+ * Array.prototype.sum
+ * String.prototype.test        //for RegExp
+ * 
+ * intGenerator
+ * isValid(variableAsString)
+ * safeEval(expressionAsString, valueIfInvalid=false)
+ * KeyString(keyEvent)
+ * 
+ * Dim.Executions
+ * Dim.lastWord
+ * Dim.executeOnce
+ * Dim.executeSparsely
+ * Dim.executeAfterRapidFire
+ * Dim.watch(variableNameInString,callbackFunction)
+ * Dim.declareWatchedVariable(variableName, variableValue=null,callbackFunction)    //deprecated
+ * Dim.LazyLoadImages(delay=1)
+ * Dim.LazyLoadResource(resourceURL, delay = 3)
+ * Dim.load(target, url)
+ * 
+ * Dim.Nav.GetParameters()
+ * Dim.Nav.CreateNewState()
+ * Dim.Nav.RefreshWindow(keepGetParameters=true)
+ * Dim.Nav.URL()
+ * Dim.Nav.path()
+ * Dim.Nav.domain()
+ * 
+ * RegularExpression{Contains,StartsWith,EndsWith}
+ * 
+ * new WatchedVariable(variableName,initialValue,callbackFunction)       //deprecated
+ * setIntervalFiniteTimes(func, interval, num, finallyExecute = ()=>{})
+ * delay(pauseInterval)
+ * varName(varAsObject)
+ * checkFor(condition)
+ * setTimeoutUntil(condition, callback, checkInterval = 200)
+ * until(condition)
+ * setCookie,getCookie,eraseCookie
+ * 
+ * 
+ */
