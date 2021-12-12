@@ -61,8 +61,9 @@ let Q = (selector) => {
             }
 
     } else {            //user selects class or NodeList
-      
+        
         let selectorProxy = selector.replaceAll(' ','_');
+        if (selector.charAt(0)=='~') {selector='[data-variable=' + selector.substring(1) + ']'}
         if (window.hasOwnProperty(selectorProxy)) { 
             return window[selectorProxy];
         }
@@ -171,31 +172,41 @@ Array.prototype.sortByNumber = function() {
     return Array.from(numArray.sort());         //create new array from sorted numArray
 };
 
-/** Convertes something to a number */
-let numberOf = whatever => isNaN(whatever) ? 0 : (whatever||0);
+/** 
+ * Reformats an already number-ish value ensuring that it will be a number.
+ * Examples: "5"=>5, "3.2 meters"=>0, true=>1, "text"=>0. 
+ * @type {(whatever: any) => number} 
+*/
+let numberOf = whatever => isNaN(+whatever) ? 0 : (+whatever||0);        //+ converts to numeric
+
+/** 
+ * Tries to convert/parse something to a number. 
+ * Examples: "5"=>5, "3.2 meters"=>3.2, "text"=>0, true=>0,  
+ * @type {(whatever: any) => number} 
+*/
+let parseNumber = whatever => isNaN(parseFloat(whatever)) ? 0 : parseFloat(whatever);
 
 /** sum of an array of numebers  */
 Array.prototype.sum = function(){
     let Sum = 0;
-    this.forEach(value => {Sum += +numberOf(value)});
+    this.forEach(value => {Sum += numberOf(value)});
     return Sum;
   };
 
 /** string.test(regexp|string) has the same functionality as regexp.test(string). */
 String.prototype.test = function(reg) {return (reg instanceof RegExp) ? reg.test(this) : this.includes(reg)};
 
-/** Creates an integer generator. How to Use: let nextNumber = intGenerator(1); console.log(nextNumber()); */
-let intGenerator = (int=1) => () => int++;      //if no parameter, first number is 1. 
+/** Creates an integer generator. How to Use: let nextNumber = IntegerGenerator(1); console.log(nextNumber()); */
+let IntegerGenerator = (int=1) => () => int++;      //if no parameter, first number is 1. 
 
 
 /** isValid(variableAsString) returns true if variable exists and has a valid value, or false if it is null/undefined */
 var isValid = variableAsString => {try{return (eval(variableAsString) != null)||false}catch{return false}};
 
-/** Gets a sting with the name of an expression or variable and returns its value if it is valid */
+/** Gets a sting with a variable or expression or and returns its value if it is valid. Like IFERROR in Excel. */
 let safeEval = (expressionAsString, valueIfInvalid=false) => {
-    try{
-        return eval(expressionAsString);
-    }catch{return valueIfInvalid}
+    try{return eval(expressionAsString)}
+    catch{return valueIfInvalid}
 };
 
 
@@ -337,7 +348,7 @@ GetParameters: () => {
 */
 
 /** Dim.Nav is a set of methods for easy window/URL manipulation 
- * It has METHODS, not vairables, so it it is UPDATED with the current (updated) parameters when client routing.
+ * It has METHODS, not properties, so it it is UPDATED with the current (updated) parameters when client routing.
 */
 Nav: {
 
@@ -363,8 +374,10 @@ Nav: {
     },
 
     URL: () => window.location.href,
-    domain: () => window.location.hostname,
+    domain: () => window.location.hostname,     //document.domain
     path: () => window.location.pathname,
+    //previous/referer/origin URL or only previous domain (depends on allow origin of previous website)
+    previous: () => document.referrer,      
 
     /** 
      * Changes URL in the URL bar, so a new item is also created in browser's history 
@@ -520,10 +533,10 @@ class WatchedVariable {
  * @param {function} [finallyExecute] Optinal. Another function to be executed in the end 
  * @returns {void} 
  */
- var setIntervalFiniteTimes = (func, interval, num, finallyExecute = ()=>{}) => {
+var setIntervalFiniteTimes = (func, interval, num, finallyExecute = ()=>{}) => {
     if (!num) {finallyExecute();return}                 
     func();
-    setTimeout(function() { this.setIntervalFiniteTimes(func, interval, num - 1, finallyExecute) }, interval);
+    setTimeout(function() { setIntervalFiniteTimes(func, interval, num - 1, finallyExecute) }, interval);
 };
 
 
@@ -542,17 +555,17 @@ class WatchedVariable {
  */
 const delay = pauseInterval => new Promise(resolve => setTimeout(resolve, pauseInterval));
 
-/** Passing a variable as an Object return its name */
-const varName = varAsObject => Object.keys(varAsObject)[0];
-
 /** Evaluates a variable, function, or string condition. Returns a boolean */
-const checkFor = condition => {
+Dim.checkFor = condition => {
     if (typeof condition === 'function'){
-        if (condition()) {return true}           //Όχι: return condition(). Δεν θέλω να επιστρέφει την condition / αποτέλεσμα/συνάρτησης.  
+        if (condition()) {return true}           
+        //Όχι: return condition(). Δεν θέλω να επιστρέφει την condition / αποτέλεσμα/συνάρτησης.  
     } else if (typeof(condition) === 'object') {
+        /** Passing a variable as an Object return its name */
+        const varName = varAsObject => Object.keys(varAsObject)[0];
         if (eval(varName(condition))) {return true}
     } else {
-        try {return eval(condition)}catch{throw "Condition is not valid";}  //κι εδώ όμως θέλει με την ίδια λογική
+        try {return eval(condition)}catch{throw "Condition is not valid"}  //κι εδώ όμως θέλει με την ίδια λογική
     }
     return false;      //if everything fails
 };
@@ -575,9 +588,9 @@ const checkFor = condition => {
  * @param {number} checkInterval Check condition every this interval in milliseconds. 
  */
 const setTimeoutUntil = (condition, callback, checkInterval = 200) => {
-    let executeNow = checkFor(condition);
+    let executeNow = Dim.checkFor(condition);
     if(!executeNow) {
-        setTimeout(setTimeoutUntil.bind(null, condition, callback), checkInterval); /* this checks the flag every 200 milliseconds*/
+        setTimeout(()=>setTimeoutUntil(condition, callback, checkInterval)); /* this checks the flag every 200 milliseconds*/
     } else {
         callback();
     }
@@ -594,14 +607,13 @@ const setTimeoutUntil = (condition, callback, checkInterval = 200) => {
  * @param {boolean|Function} condition Use a variable or a function (that returnes true/false). Do not use condition or expression!
  * @returns {Promise} 
  */
-var until = condition => {
-    const poll = resolve => {
-      let resolveNow = checkFor(condition);
-      if (resolveNow) {resolve()}
-      else {setTimeout(_ => poll(resolve), 200)}
+var until = condition => {  //needs a name to re-call itself
+    const poll = resolve => {      
+        if (Dim.checkFor(condition)) {resolve()}
+        else {setTimeout(_=>poll(resolve), 200)}
     };
     return new Promise(poll);
-  };
+};
 
 
 
@@ -652,57 +664,3 @@ function eraseCookie(name) {
     document.cookie = name +'=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
 }
 
-
-/**
- * ALL FUNCTIONS:
- * 
- * Q(queryString)
- * createVariablesFromDOM()  //deprecated
- * 
- * isDev // variable (not function)
- * log
- * check
- * 
- * Array.prototype.last
- * Array.prototype.unique
- * Array.prototype.sortByNumber
- * numberOf     // convert to number
- * Array.prototype.sum
- * String.prototype.test        //for RegExp
- * 
- * intGenerator
- * isValid(variableAsString)
- * safeEval(expressionAsString, valueIfInvalid=false)
- * KeyString(keyEvent)
- * 
- * Dim.Executions
- * Dim.lastWord
- * Dim.executeOnce
- * Dim.executeSparsely
- * Dim.executeAfterRapidFire
- * Dim.watch(variableNameInString,callbackFunction)
- * Dim.declareWatchedVariable(variableName, variableValue=null,callbackFunction)    //deprecated
- * Dim.LazyLoadImages(delay=1)
- * Dim.LazyLoadResource(resourceURL, delay = 3)
- * Dim.load(target, url)
- * 
- * Dim.Nav.GetParameters()
- * Dim.Nav.CreateNewState()
- * Dim.Nav.RefreshWindow(keepGetParameters=true)
- * Dim.Nav.URL()
- * Dim.Nav.path()
- * Dim.Nav.domain()
- * 
- * RegularExpression{Contains,StartsWith,EndsWith}
- * 
- * new WatchedVariable(variableName,initialValue,callbackFunction)       //deprecated
- * setIntervalFiniteTimes(func, interval, num, finallyExecute = ()=>{})
- * delay(pauseInterval)
- * varName(varAsObject)
- * checkFor(condition)
- * setTimeoutUntil(condition, callback, checkInterval = 200)
- * until(condition)
- * setCookie,getCookie,eraseCookie
- * 
- * 
- */

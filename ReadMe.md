@@ -232,25 +232,30 @@ noDark
 
 
 
-## **Selecting HTML Elements**
+## **Selecting HTML Elements with the Q selector**
 
 
 ### `Q(queryString)`
 
-Use `Q` to select HTML Elements. It is used similarly to `$(elements)` in `jQuery`. However, it returns DOM elements, not jQuery elements),and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `#id` then `Q` returns the HTML element with this id (or returns null). If it is an element name (like `p` or `li`) or a `.class`, then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
+### **General description**
+
+Use `Q` to select HTML Elements. It is used similarly to `$(elements)` in `jQuery`. However, it returns DOM elements, not jQuery elements,and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `#id` then `Q` returns the HTML element with this id (or returns null). Else, (if it is an element name (like `p` or `li`), a `.class` or something other), then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
 ```JavaScript
 Q('p')      //returns an array-like object of all p elements 
 Q('.btn')   //returns an array-like object of all elements with class "btn"
 Q('#send') //returns the element with id "send"
 ```
+
+### **Selectors by ID**
+
 In the case of an `#id` (single element), you can also use the following **additional** methods that are now available:
 ```JavaScript
 /***  Display and CSS  ***/
 Q('#message').hide()                       //hides the element (display none)
 Q('#message').show()                       //shows the element if hidden (display revert)
-Q('#message').addClass('className')        //add a class to an element
-Q('#message').removeClass('className')     //remove a class from an element
-Q('#message').toggleClass('className')     //toggle a class to an element   
+Q('#message').addClass('className')        //adds a class to an element
+Q('#message').removeClass('className')     //removes a class from an element
+Q('#message').toggleClass('className')     //toggles a class to an element   
 
 //replaces the text (textContent) of an element
 Q('#message').set(text)            
@@ -260,18 +265,18 @@ Q('#message').set(richText,'html')
 //Makes a GET request from a URL, and then replaces 
 //the text of `#textFromOuside` with the GET response. 
 Q('#textFromOuside').fetch(URL)                     
-//If the result is an object (and not a singe value), 
-//you must specify the second argument (pathFunction) as a funtion of it:
-Q('#textFromOuside').fetch(URL,resObj=>resObj.key)
- //Sends a POST request to URL sending an object with the value of #textArea. 
- //The data is in the format: {parameterName:valueOfInput}
+//If the result is an object (and not a singe value/text), 
+//you must specify the second argument (pathFunction) as a funtion of this object:
+Q('#textFromOuside').fetch(URL,resObj=>resObj.specificProperty)
+//Sends a POST request to URL sending an object with the value of #textArea. 
+//The data is in the format: {parameterName:valueOfInput}
 Q('#textArea').post(URL,parameterName)         
 
 /***  Event listeners  ***/
 Q('#menuItem').on(event,callback)                   //on=eventlistener
 Q('#menuItem').onClick(callback)                    //eventlistener('click',...
 Q('#menuItem').onInputChange(callback)              //eventlistener('input,...
-//onkeydown using the special keyString variable, defined below. example:
+//onkeydown using the special keyString variable, defined below. Example:
 Q('#menuItem').onKeyboard(function(keyString){
     if (keyString="Ctrl+S") {/*save the item to database*/}
 })
@@ -279,23 +284,25 @@ Q('#menuItem').onKeyboard(function(keyString){
 
 In the case of `Q(window)` or `Q(document)`, only `on` and `onKeyboard` are added to its standard methods. 
 
-In the case of an element name (like `p` or `li`) or a `.class` the result is a NodeList that is generally difficult to use. So, you can use the following added methods:
+### **Selectors by Class or general selectors**
+
+In the case of an element name (like `p` or `li`), a `.class` or `[data-attribute="something"]`, the result is a NodeList (it uses `document.querySelectorAll()`) that is generally difficult to use. So, you can use the following added methods:
 
 ```JavaScript
 /***  Display and CSS   ***/
-Q('.symbols').hide()                      //hides all elements
-Q('.symbols').show()                      //shows all elements if hidden (display revert)
+Q('.symbols').hide()                      //hide all elements (display none)
+Q('.symbols').show()                      //show all elements if hidden (display revert)
 Q('.alerts').addClass('className')        //add a class to all elements
 Q('.alerts').removeClass('className')     //remove a class from all elements
 Q('.alerts').toggleClass('className')     //toggle a class to all elements   
 
-//replaces the text (textContent) of all elements
+//replace the text (textContent) of all elements
 Q('.className').set(text)            
 //when 'html', it replaces the innerHTML of all elements          
-Q('#className').set(richText,'html')           
+Q('.className').set(richText,'html')           
 
 //on=eventlistener on all elements
-Q('#menuItem').on(event,callback)   
+Q('.menuItem').on(event,callback)   
 
 
 // DO SOMETHING TO ALL ELEMENTS OF NODELIST:
@@ -303,21 +310,34 @@ Q('#menuItem').on(event,callback)
 //  1. For custom functions on all elements  -  Use map or forEach as usual. 
 // * Note that NodeList does not support map. It is an added method!
 //array of firstWord of paragraphs 
-Q(".mainParagraph").map(parapraph=>firstWord(paragraph))         
+Q('.mainParagraph').map(parapraph=>firstWord(paragraph))         
 
 //  2. For single properties  -  Just use the property!
-Q(".mainParagraph").title               //an array of the titles of all elements!
-Q(".mainParagraph").firstChild          //an array of the firstChilds(!) of all elements!
-Q(".mainParagraph").outerHTML = `some html`;    //sets all elements' outerHTML!
+Q('.mainParagraph').title                   //an array of the titles of all elements!
+Q('.mainParagraph').firstChild              //an array of the firstChilds(!) of all elements!
+Q('.mainParagraph').outerHTML = `some html`    //sets all elements' outerHTML!
 //this does not work with nested properties:
-Q(".mainParagraph").firstChild.innerHTML        //error! Use map instead. 
+Q('.mainParagraph').firstChild.innerHTML        //error! Use map instead. 
 
 //  3. For methods  -  Use .each
 //get an array of the data-testAttr of all elements!
-Q(".someClass").each.getAttribute('data-someAttr')  
+Q('.someClass').each.getAttribute('data-someAttr')  
 //change or set the data-testAttr of all elements! 
-Q(".someClass").each.setAttribute('data-someAttr','new value')
+Q('.someClass').each.setAttribute('data-someAttr','new value')
 ```
+
+### **Selectors by JavaScript Variable using ~**
+
+Finally, a useful feature is when you want to change the text of some elements when a variable changes. In that case in the `HTML` you must have an element with `data-variable="variableName"`:
+```HTML
+<p>Your name is <span data-variable="username">guest</span> and you can read below.</p>
+```
+You can select and change all these elements simply with:
+```JavaScript
+//change the textContent of all elements with [data-variable="username"] to "George" if logged-in:
+Q('~username').set("George")    
+```
+Otherwise, you had to do `document.querySelectorAll('[data-variable="username"]').forEach(el=>el.textContent="George")`!!!
 
 <hr>
 
@@ -341,10 +361,13 @@ Dim.Nav.GetParameters()
 Dim.Nav.RefreshWindow()
 Dim.Nav.RefreshWindow(false)       //refresh and get rid of get parameters
 
-//return the current full URL, only the domain, or only the local (relative) path
+//return the current full URL, only the domain, or only the local (relative) path:
 Dim.Nav.URL()
 Dim.Nav.domain()
 Dim.Nav.path()
+//return the previous/referer/origin URL or previous domain only 
+//(depends on "allow origin" property of previous website):
+Dim.Nav.previous() 
 
 //Used in client-side routing. 
 //Changes URL in the URL bar, so a new item is also created in browser's history
@@ -357,7 +380,7 @@ Dim.Nav.CreateNewState(localPath)
 <hr>
 
 
-## **Logging to console in development environment**
+## **Logging to console only in development environment**
 ### `Console log/debug only in local/dev`
 ```JavaScript
 log("message")          //console.log("message"), only in local/dev 
@@ -377,9 +400,7 @@ isDev       //true if the URL begins with 'localhost', '127.0', etc...
 This is a variable, not a function. You can use it in statements like 
 
 ```JavaScript
-if (isDev) {
-    //code that runs only in local/development environment
-}
+if (isDev) { /*code that runs only in local/development environment*/ }
 ```
 
 <hr>
@@ -392,11 +413,25 @@ if (isDev) {
 
 ```JavaScript
 Array.last()
+Array.sum()
 Array.unique()
-Array.numberSort()
+Array.sortByNumber()
 ```
 
-These do what they seem they do! Return the last item of the array (like `pop` without removing it), return an array having only the unique values of the original, and sort an array of numbers numerically. 
+These do what they seem they do! Return the last item of the array (like `pop` without removing it), return the sum of the values of an array, return an array having only the unique values of the original, and sort an array of numbers numerically. 
+
+### `Converting to / Extracting numeric values`
+
+```JavaScript
+numberOf(whatever)
+parseNumber(whatever)
+```
+
+`numberOf` reformats an already number-ish value (if needed) ensuring that it will return a number. 
+Examples: "5"=>5, "3.2 meters"=>0, true=>1, "text"=>0. 
+
+`parseNumber` tries to convert/parse/understand/extract a string/number in order to return a number. It uses `parseFloat`.
+Examples: "5"=>5, "3.2 meters"=>3.2, "text"=>0, true=>0.  
 
 
 ### `String.test(RegExp)`
@@ -421,7 +456,7 @@ Changes easily a CSS variable. Replaces the long function `document.documentElem
 
 ### `safeEval(expressionAsString)`
 
-Give it a string with a name of expression/variable. If the expression/variable evaluates, the function returns the evaluation. Else, it returns `false` or the second optional argument.
+Give it a string with a name of expression/variable. It is used like `IFERROR` in Microsoft Excel. If the expression/variable evaluates (is not an error), the function returns the evaluation. Else, it returns `false` or the second optional argument.
 ```JavaScript
 let surname = 'Johnes'
 safeEval('surname')                         // 'Johnes'
@@ -447,14 +482,14 @@ This should be used only in development environment, because it creates a `setIn
 
 ## **Integer Generator**
 
-### `intGenerator()`
+### `IntegerGenerator()`
 
 Creates an integer generator. Every time you call it, it returns the next integer. 
 Example on how to use: https://codepen.io/dimvai/pen/xxdamLb
 
 **1st step**. Define your function:
 ```JavaScript
-let nextNumber = intGenerator(1)
+let nextNumber = IntegerGenerator(1)
 ```
 The argument is optional and defines the first integer. If omitted, then it starts at `1`. 
 
