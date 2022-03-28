@@ -5,8 +5,10 @@ Feel free to steal my code!
 
 CSS Classes.
 
-Note that everything uses the default bootstrap breakpoints:
+Note that everything uses the default Bootstrap breakpoints:
 ```CSS
+	--xxs: 288px;
+	--xs: 384px;
 	--sm: 576px;
 	--md: 768px;
 	--lg: 992px;
@@ -19,6 +21,8 @@ Note that everything uses the default bootstrap breakpoints:
 ## **Slim containers**
 
 ```CSS
+xxs
+sx
 sm 
 md 
 lg
@@ -64,35 +68,35 @@ Although the above class does its job most of the time, mainly in text or pictur
 
 ```CSS
 center-contents
+center-contents-top
 ```
 
-Centers one or more children horizontally. If there is more space vertically, it will also center it/them vertically. If there are more than one, they will be stacked one below the other. 
+Centers one or more children horizontally. If there are more than one, they will be stacked one below the other. If the container has more height, the first class will also center it/them vertically. 
 
 You can place more than one "things" inside, and they will all be centered. *Note*: if it is a text paragraph, the class will "position" it to the center, not "align" it.
 
-```CSS
-center-contents-inline
-```
-
-Centers children, only horizontally, all in the **same line**.
+## **Placing items in the same line**
 
 ```CSS
-center-contents-inline-middle
+inline-contents
+inline-contents-top
 ```
 
-Centers the child/children **both vertically and horizontally**. If more than one item, they will be on the same line. 
+Places children, all in the **same line**. The first class centers them all vertically also.  
 
-Finally, these inline cases are **responsive** using the `md` and `lg` breakpoints, meaning that they are not inline in smaller devices. Examples:
+Finally, these inline cases are **responsive** using the `md` and `lg` breakpoints, meaning that they are not inline in smaller devices:
 
 ```css
-center-contents-md-inline 
-center-contents-lg-inline-middle
+inline-contents-md
+inline-contents-lg  
+inline-contents-top-md
+inline-contents-top-lg
 ```
 <hr>
 
 ## **Standard inline structures**
 
-Use the standard inline structure for easy inline alignment of children (for example in the header):
+Use the standard inline structure for easy inline alignment of children (for example in the header with a navigation bar):
 ```css
 standard-inline-3   /*left-center-right*/
 standard-inline-2   /*left-right*/
@@ -205,22 +209,18 @@ sticky
 ```
 Stick something to top, when scroll by.
 
-```CSS
-center-left
-```
-center on mobile, left on desktop
 CSS for Lazy images. In the HTML set:
 ```HTML
 <img src="nothing-or-small-pic" data-src="real-img-source" data-lazy="#">
 ```
 
-Easy Dark mode. Add one of theses classes according to your needs. Then, when you want to toggle dark mode, add (with JavaScript) the class `dark-mode` (everywhere or where you want). 
+Dark mode:
 
 ```CSS
 darkable
 noDark
 ```
-
+Add one of theses classes according to your needs. Then, when you want to toggle dark mode, add (with JavaScript) the class `dark-mode` (everywhere or where you want). 
 
 
 <hr>
@@ -239,94 +239,98 @@ noDark
 
 ### **General description**
 
-Use `Q` to select HTML Elements. It is used similarly to `$(elements)` in `jQuery`. However, it returns DOM elements, not jQuery elements,and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `#id` then `Q` returns the HTML element with this id (or returns null). Else, (if it is an element name (like `p` or `li`), a `.class` or something other), then it returns a (possibly empty) NodeList (array-like object with HTML Elements). Examples:
+Use `Q` to select HTML Elements. It is used similarly to `$(elements)` in `jQuery`. However, it returns DOM elements, not jQuery elements, and it replaces the long functions `document.querySelectorAll(elements)` and `document.querySelector(element)`. If the parameter is an `#id` then `Q` returns the HTML element with this id (or returns null). Else, (if it is an element name (like `p` or `li`), a `.class` or something other), then it returns a (possibly empty) array containing the selected HTML Elements. Special case is the `~` selector. Examples:
 ```JavaScript
-Q('p')      //returns an array-like object of all p elements 
-Q('.btn')   //returns an array-like object of all elements with class "btn"
-Q('#send') //returns the element with id "send"
+Q('#send')      //returns the element with id "send"
+
+Q('p')          //returns an array of all p elements 
+Q('.btn')       //returns an array of all elements with class "btn"
+Q('[href="/app"]')   //returns all elements with href attribute "/app"
+
+//returns an array with all elements which have: data-variable="author"
+Q('~author')    // = Q('[data-variable="author"]')
 ```
 
-### **Selectors by ID**
+### **Selectors by `ID`**
 
 In the case of an `#id` (single element), you can also use the following **additional** methods that are now available:
 ```JavaScript
 /***  Display and CSS  ***/
 Q('#message').hide()                       //hides the element (display none)
 Q('#message').show()                       //shows the element if hidden (display revert)
-Q('#message').addClass('className')        //adds a class to an element
-Q('#message').removeClass('className')     //removes a class from an element
-Q('#message').toggleClass('className')     //toggles a class to an element   
+// toggles a class to an element by checking a condition (can be true or false)
+Q('#message').toggleClass('className',condition)       
 
-//replaces the text (textContent) of an element
+// replaces the text (textContent) of an element
 Q('#message').set(text)            
-//when 'html', it replaces the innerHTML of an element          
+// when 'html', it replaces the innerHTML of an element          
 Q('#message').set(richText,'html')           
 
-//Makes a GET request from a URL, and then replaces 
-//the text of `#textFromOuside` with the GET response. 
+/***  Sending and getting data ***/
+// Makes a GET request from a URL, and then replaces 
+// the text of `#textFromOuside` with the GET response. 
 Q('#textFromOuside').fetch(URL)                     
-//If the result is an object (and not a singe value/text), 
-//you must specify the second argument (pathFunction) as a funtion of this object:
+// If the result is an object (and not a singe value/text), 
+// you must specify the second argument (pathFunction) as a funtion of this object:
 Q('#textFromOuside').fetch(URL,resObj=>resObj.specificProperty)
-//Sends a POST request to URL sending an object with the value of #textArea. 
-//The data is in the format: {parameterName:valueOfInput}
+// Sends a POST request to URL sending an object with the value of #textArea. 
+// The data is sent in the format: {parameterName:valueOfInput}
 Q('#textArea').post(URL,parameterName)         
 
 /***  Event listeners  ***/
-Q('#menuItem').on(event,callback)                   //on=eventlistener
-Q('#menuItem').onClick(callback)                    //eventlistener('click',...
-Q('#menuItem').onInputChange(callback)              //eventlistener('input,...
-//onkeydown using the special keyString variable, defined below. Example:
-Q('#menuItem').onKeyboard(function(keyString){
+Q('#menuItem').on(event,callback)                   //on=addEventlistener
+Q('#menuItem').onClick(callback)                    //addEventlistener('click',...
+Q('#menuItem').onInputChange(callback)              //addEventlistener('input,...
+// onkeydown using the special keyString variable (see later). Example:
+Q('#menuItem').onKeyboard(function(keyEvent,keyString){
     if (keyString="Ctrl+S") {/*save the item to database*/}
 })
 ```
 
 In the case of `Q(window)` or `Q(document)`, only `on` and `onKeyboard` are added to its standard methods. 
 
-### **Selectors by Class or general selectors**
+### **Selectors by `Class` or `general` selectors**
 
-In the case of an element name (like `p` or `li`), a `.class` or `[data-attribute="something"]`, the result is a NodeList (it uses `document.querySelectorAll()`) that is generally difficult to use. So, you can use the following added methods:
+In the case of an element name (like `p` or `li`), a `.class` or `[data-attribute="something"]`, the result is an array. Besides all array methods, you can use the following **additional** methods:
 
 ```JavaScript
 /***  Display and CSS   ***/
-Q('.symbols').hide()                      //hide all elements (display none)
-Q('.symbols').show()                      //show all elements if hidden (display revert)
-Q('.alerts').addClass('className')        //add a class to all elements
-Q('.alerts').removeClass('className')     //remove a class from all elements
-Q('.alerts').toggleClass('className')     //toggle a class to all elements   
+Q('.symbols').hide()                      //hides all elements (display none)
+Q('.symbols').show()                      //shows all elements if hidden (display revert)
+Q('.alerts').toggleClass('className',condition)     //toggles a class to all elements 
 
-//replace the text (textContent) of all elements
+// shows all elements that fulfil the filterFunction and hides the rest 
+Q('.buttonsArea button').displayFilter(filterFunction)     
+
+// replaces the text (textContent) of all elements
 Q('.className').set(text)            
-//when 'html', it replaces the innerHTML of all elements          
+// when 'html', it replaces the innerHTML of all elements          
 Q('.className').set(richText,'html')           
 
-//on=eventlistener on all elements
+// on=eventlistener on all elements
 Q('.menuItem').on(event,callback)   
 
 
 // DO SOMETHING TO ALL ELEMENTS OF NODELIST:
 
 //  1. For custom functions on all elements  -  Use map or forEach as usual. 
-// * Note that NodeList does not support map. It is an added method!
-//array of firstWord of paragraphs 
 Q('.mainParagraph').map(parapraph=>firstWord(paragraph))         
 
 //  2. For single properties  -  Just use the property!
 Q('.mainParagraph').title                   //an array of the titles of all elements!
 Q('.mainParagraph').firstChild              //an array of the firstChilds(!) of all elements!
 Q('.mainParagraph').outerHTML = `some html`    //sets all elements' outerHTML!
-//this does not work with nested properties:
-Q('.mainParagraph').firstChild.innerHTML        //error! Use map instead. 
+// this does not work with nested properties:
+Q('.mainParagraph').firstChild.innerHTML        //error! Use map instead... 
 
 //  3. For methods  -  Use .each
-//get an array of the data-testAttr of all elements!
+// get an array of the data-someAttr of all elements!
 Q('.someClass').each.getAttribute('data-someAttr')  
-//change or set the data-testAttr of all elements! 
+// change or set the data-someAttr of all elements! 
 Q('.someClass').each.setAttribute('data-someAttr','new value')
 ```
 
-### **Selectors by JavaScript Variable using ~**
+### **Selectors by JavaScript Variable using the `~` selector**
 
 Finally, a useful feature is when you want to change the text of some elements when a variable changes. In that case in the `HTML` you must have an element with `data-variable="variableName"`:
 ```HTML
@@ -343,58 +347,20 @@ Otherwise, you had to do `document.querySelectorAll('[data-variable="username"]'
 
 
 
-
-## **Navigation, URL, Get parameters**
-
-
-### `Dim.Nav`
-
-Dim.Nav is a set of methods for easy window/URL manipulation. It has METHODS, not vairables, so it it is updated with the current (updated) parameters when client routing.
-Examples of methods:
-```JavaScript
-//returns the value of the GET parameter of the URL
-Dim.Nav.GetParameters('gameId')       
-//If parameter not defined, it returnes all GET parameters in a key-value object.
-Dim.Nav.GetParameters()  
-
-//Refreshes current page (optionalparameter)
-Dim.Nav.RefreshWindow()
-Dim.Nav.RefreshWindow(false)       //refresh and get rid of get parameters
-
-//return the current full URL, only the domain, or only the local (relative) path:
-Dim.Nav.URL()
-Dim.Nav.domain()
-Dim.Nav.path()
-//return the previous/referer/origin URL or previous domain only 
-//(depends on "allow origin" property of previous website):
-Dim.Nav.previous() 
-
-//Used in client-side routing. 
-//Changes URL in the URL bar, so a new item is also created in browser's history
-Dim.Nav.CreateNewState(localPath)
-//Then, you need to use window.onpopstate to tell the browser what to do 
-//when the uses presses back or forward, because no "real new" page was loaded. 
-
-```
-
-<hr>
-
-
 ## **Logging to console only in development environment**
-### `Console log/debug only in local/dev`
+### **Console log/debug only in local/dev**
 ```JavaScript
-log("message")          //console.log("message"), only in local/dev 
+log("message")          // console.log("message"), only in local/dev 
 check()                 // console.debug("check ok"), only in local/dev 
-check("button pressed") //console.debug("button pressed"), only in local/dev
+check("button pressed") // console.debug("button pressed"), only in local/dev
 ```
 
-Use these to output something to console. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. 
+Use these to output something to console, but only in your development enviroment. So, use `log(message)`, instead of `console.log(message)` and `check(message)` instead of `console.debug(message)`. In `check`, the message is optional, and the default text is `"check ok"`, so just use `check()`. 
 
 The logging to console happens only in local/development environment, i.e. when the following variable is `true`':
 
-### `Check for local/dev`
 ```JavaScript
-isDev       //true if the URL begins with 'localhost', '127.0', etc... 
+isDev       // true if the URL begins with 'localhost', '127.0', etc... 
 ```
 
 This is a variable, not a function. You can use it in statements like 
@@ -403,24 +369,40 @@ This is a variable, not a function. You can use it in statements like
 if (isDev) { /*code that runs only in local/development environment*/ }
 ```
 
+### **Quick error for debugging (dev/prod)**
+```JavaScript
+err(message)        // throw new Error(message)
+```
+(The `err` function throws the error in dev and prod enviroments. )
+
 <hr>
 
 
-## **Variables and prototypes:**
+## **Functions for handling variables:**
 
 
-### `Methods for arrays`
+### **Arrays and Vectors**
 
 ```JavaScript
-Array.last()
-Array.sum()
-Array.unique()
-Array.sortByNumber()
+Unique(array)           // returns the unique elements of an array
+Sum(array)              // retruns the sum of the items elements
+SortByNumber(array)     // sorts the array numerically
+RunningTotal(array)     // running total
+Vector.add(vector)               // add two vectors
+Vector.subtract(vector)           // subtract two vectors
+Vector.multiply(vector,number)         // multiply two vectors per element
+Vector.dotProduct(vector1,vector2)  // returns the dot product of two vectors
 ```
 
 These do what they seem they do! Return the last item of the array (like `pop` without removing it), return the sum of the values of an array, return an array having only the unique values of the original, and sort an array of numbers numerically. 
 
-### `Converting to / Extracting numeric values`
+### **Strings**
+```JavaScript
+properTrim(sentence)        // a "Microsoft Excel" type of trim()
+wordsOf(sentence)           // an array of the words of a sentence (uses trim)
+```
+
+### **Numbers (converting to / extracting numeric values)**
 
 ```JavaScript
 numberOf(whatever)
@@ -428,45 +410,37 @@ parseNumber(whatever)
 ```
 
 `numberOf` reformats an already number-ish value (if needed) ensuring that it will return a number. 
-Examples: "5"=>5, "3.2 meters"=>0, true=>1, "text"=>0. 
+Examples: "5"=>5, "3.2"=>3.2, true=>1, "3.2 meters"=>0, "text"=>0. 
 
 `parseNumber` tries to convert/parse/understand/extract a string/number in order to return a number. It uses `parseFloat`.
-Examples: "5"=>5, "3.2 meters"=>3.2, "text"=>0, true=>0.  
+Examples: "5"=>5, "3.2 meters"=>3.2, "text"=>0, true=>0.
 
 
-### `String.test(RegExp)`
 
-```JavaScript
-String.test(stringOrRegexp)
-```
-This has the same functionality as` regex.test(string)`, but with different (usually more convenient) syntax. See below for ready Regular Expressions that `dim.js` provides. 
-
-Additionally, you can pass string as a parameter, which has the same functionality as `string.includes(string)`. 
-
-
-### `setCssProperty(variable,value)`
-
+### **CSS: change css properties**
 
 ```JavaScript
+setCssProperty(variable,value)
 setCssProperty('--backColor','red')
 ```
 
 Changes easily a CSS variable. Replaces the long function `document.documentElement.style.setProperty`. Don't forget the "`--`"! 
 
 
-### `safeEval(expressionAsString)`
-
-Give it a string with a name of expression/variable. It is used like `IFERROR` in Microsoft Excel. If the expression/variable evaluates (is not an error), the function returns the evaluation. Else, it returns `false` or the second optional argument.
+### **Get the specific type of a varialbe**
 ```JavaScript
-let surname = 'Johnes'
-safeEval('surname')                         // 'Johnes'
-safeEval('surName')                         //  false
-safeEval('surName','there is no surname')   // 'there is no surname'
+Dim.typeof(variable)
 ```
+Returns one of the following: `string`, `number`, `boolean`, `function`, `undefined`, `symbol`, `null`, `array`, `date`, `regexp`, `error`, or a custom class constructor... Not simply the generic "object" that native `typeof` returns. 
 
 <hr>
 
-
+## **A better fetch**
+```JavaScript
+DimFetch(URL,property=null,tries=3)
+```
+Fetch, with 3 tries, in only one step. It returns a promise. 
+As for the `property`, set the name of property to grab the object property (`result.specificProperty`), set `true` to return the entire object, or set `null` / `false` to get as text.
 
 ## **Watch variables for changes:**
 
@@ -480,9 +454,9 @@ This should be used only in development environment, because it creates a `setIn
 
 <hr>
 
-## **Integer Generator**
+## **Integer Generator Functions**
 
-### `IntegerGenerator()`
+### **Integer Generator**
 
 Creates an integer generator. Every time you call it, it returns the next integer. 
 Example on how to use: https://codepen.io/dimvai/pen/xxdamLb
@@ -496,10 +470,23 @@ The argument is optional and defines the first integer. If omitted, then it star
 
 **2nd step**. Call your function (without any arguments) as many times you want: 
 ```JavaScript
-nextNumber()  //returns 1
-nextNumber()  //returns 2
-nextNumber()  //returns 3
+nextNumber()  // returns 1
+nextNumber()  // returns 2
+nextNumber()  // returns 3
 ```
+
+### **Random Sequence of integers**
+
+```JavaScript
+Dim.RandomSequence(length)
+```
+Returns an array of integers in `[0,1,...,length-1]` in random sequence.
+
+### **Custom element generator**
+```JavaScript
+CreateCustomElement({})
+```
+This needs its own documentation
 
 <hr>
 
@@ -521,17 +508,17 @@ Other examples:
 document.addEventListener("keydown",function(keyEvent){
     let keyString = KeyString(keyEvent);
     if (keyString == "Alt+U"){
-        //do something
+        /* do something */
     } else if (keyString == "Ctrl+S"){
-        keyEvent.preventDefault();      //Do not use the default browser "Save website as"
-        //Code for Saving user's data in database
+        keyEvent.preventDefault();      // do not use the default browser "Save website as"
+        /* Code for Saving user's data in database */
     }
 });
 inputText.addEventListener("keydown",function(keyEvent){
     if (KeyString(keyEvent)=='Ctrl+Shift+A') {
-        //code
+        // code
     } else if (KeyString(keyEvent)=='Alt+Ctrl+Shift+Q') {
-        //code
+        // code
     }
 });
 ```
@@ -542,46 +529,84 @@ You can check out what KeyString outputs here: https://codepen.io/dimvai/pen/KKv
 
 
 
+## **Navigation, URL, Get parameters**
+
+
+### `Dim.Nav`
+
+Dim.Nav is a set of methods for easy window/URL manipulation. It has METHODS, not vairables, so it it is updated with the current (updated) parameters when client routing.
+Examples of methods:
+```JavaScript
+// returns the value of the GET parameter of the URL
+Dim.Nav.GetParameters('gameId')       
+// if parameter not defined, it returnes all GET parameters in a key-value object.
+Dim.Nav.GetParameters()  
+
+// refreshes current page (optionalparameter)
+Dim.Nav.RefreshWindow()
+Dim.Nav.RefreshWindow(false)       //refresh and get rid of get parameters
+
+// return the current full URL, only the domain, or only the local (relative) path:
+Dim.Nav.URL()
+Dim.Nav.domain()
+Dim.Nav.path()
+// return the previous/referer/origin URL or previous domain only 
+// (depends on "allow origin" property of previous website):
+Dim.Nav.previous() 
+
+// Used in client-side routing. 
+// Changes URL in the URL bar, so a new item is also created in browser's history
+Dim.Nav.CreateNewState(localPath)
+// then, you need to use window.onpopstate to tell the browser what to do 
+// when the uses presses back or forward, because no "real new" page was loaded. 
+
+```
+
+<hr>
+
+
+
+
 ## **RegExp Utilities**
 
 ### `RegularExpression`
 
-Use them with the `test` Javascript function. If you use them with `match` function, you may need to add `/g` or other flags. These are designed to be used with the `RegExp.test(String)` function or the `String.test(RegExp)` function that is defined in this `dim.js`.
+Use them with the `test` Javascript function. If you use them with `match` function, you may need to add `/g` or other flags. These are designed to be used with the `RegExp.test(String)` function. 
 
 Live example here: https://codepen.io/dimvai/pen/MWodGmv
 
 ```JavaScript
-//this RegExp returns true if the string contains "oneString"
+// this RegExp returns true if the string contains "oneString"
 RegularExpression.Contains(oneString)    
-//returns: .*oneString.*
+// returns: .*oneString.*
 
-//this RegExp returns true if the string contains one of the two strings
+// this RegExp returns true if the string contains one of the two strings
 RegularExpression.Contains(firstString,secondString)   
-//returns:  .*(firstString|secondString).*
+// returns:  .*(firstString|secondString).*
 
-//this RegExp returns true if the string contains none of the strings
+// this RegExp returns true if the string contains none of the strings
 RegularExpression.ContainsNot(firstString,secondString)
 
-//you get the idea!
+// you get the idea!
 RegularExpression.StartsWith(firstString,secondString)
 RegularExpression.StartsWithNot(firstString,secondString)
 RegularExpression.EndsWith(firstString,secondString)
 RegularExpression.EndsWithNot(firstString,secondString)
 
-//this RegExp returns true if the string contains one of the strings of the firstArray AND none of the strings of the secondArray
+// this RegExp returns true if the string contains one of the strings of the firstArray AND none of the strings of the secondArray
 RegularExpression.ContainsWhileDoesNotContain(firstArray,secondArray)
 
-//this RegExp returns true
+// this RegExp returns true
 RegularExpression.Everything()      //returns: .*
 ```
 
-How to use them:
+### **How to use RegularExpression:**
 ```JavaScript
-"this string is somewhat weird" .test(RegularExpression.Contains(["someone","somewhat"])) 
-//true, because the string contains "somewhat" or "someone"
+RegularExpression.Contains(["someone","somewhat"]).test("this string is somewhat weird" )
+// true, because the string contains "somewhat" or "someone"
 
-"this string is somewhat weird" .test(RegularExpression.ContainsWhileDoesNotContain(["someone","somewhat"],["something"])) 
-//true, because the string contains "somewhat" or "someone" while does not contain "something". 
+RegularExpression.ContainsWhileDoesNotContain(["someone","somewhat"],["something"]).test("this string is somewhat weird") 
+// true, because the string contains "somewhat" or "someone" while does not contain "something". 
 ```
 Of course you can use the official `test()` property of a `RegExp` type. 
 
@@ -645,10 +670,10 @@ let myAsyncFunction = async () => {
 Wait for a condition to be met and, only then, continue execution of the parent `async` function. This is the **recommended** way to implement: 
 
 ```JavaScript
-let myCondition = () => (number==1);        //function that returns true if number==1
+let myCondition = () => (number==1);        // function that returns true if number==1
 let myAsyncFunction = async () => {
     //other commands
-    await until (myCondition);  //waits for myCondition to be met
+    await until (myCondition);  // waits for myCondition to be met
     //other commands
 }
 ```
@@ -656,14 +681,14 @@ let myAsyncFunction = async () => {
 The use of a function (without () or with the use of `bind`) is the recommended one. But, you can also use one of these:
 ```JavaScript
 await until ('number==1')
-await until ('number') //continues if number is true/truthy
-await until ({number}) //continues if number is true/truthy
+await until ('number')      // continues if number is true/truthy
+await until ({number})      // continues if number is true/truthy
 ```
 
 These do not work:
 ```JavaScript
-await until (number==1)    //does not work
-await until (number)        //does not work
+await until (number==1)     // does not work
+await until (number)        // does not work
 ```
 
 ### `setTimeoutUntil(condition, callbackFunction, checkInterval)`
@@ -673,22 +698,22 @@ Waits for a condition to be met and, only then, executes a function. `checkInter
 The recommended way to use it is using defined functions:
 
 ```JavaScript
-let myCondition = ()=>(number==1)   //gets true if number==1
-let callWhenReady = ()=>console.log("run when ready")    //this function will run
+let myCondition = ()=>(number==1)   // gets true if number==1
+let callWhenReady = ()=>console.log("run when ready")    // this function will run
 setTimeoutUntil(myCondition,callWhenReady)
 ```
 
 Besides the above recommended way, you can also use:
 ```JavaScript
 setTimeoutUntil('number==1',()=>console.log("run"))
-setTimeoutUntil('number',()=>console.log("run")) //run when number gets true/truthy
-setTimeoutUntil({number},()=>console.log("run")) //run when number gets true/truthy   
+setTimeoutUntil('number',()=>console.log("run"))    // run when number gets true/truthy
+setTimeoutUntil({number},()=>console.log("run"))    // run when number gets true/truthy   
 ```
 These do not work:
 ```JavaScript
-//do not use () in either argument. Use bind instead.
-setTimeoutUntil(myCondition(),callWhenReady)   //does not work
-setTimeoutUntil(number,callWhenReady)       //does not work
+// do not use () in either argument. Use bind instead.
+setTimeoutUntil(myCondition(),callWhenReady)    // does not work
+setTimeoutUntil(number,callWhenReady)           // does not work
 ```
 
 <hr>
@@ -697,11 +722,11 @@ setTimeoutUntil(number,callWhenReady)       //does not work
 ## **Cookies**
 
 ```JavaScript
-setCookie(name, value, days=30)
-getCookie(name)
-eraseCookie(name)
+set(name, value, days=30)
+get(name)
+erase(name)
 ```
-These are self-explanatory, so no need to explain.
+These are self-explanatory, so no need to explain. `name` is the name of the cookie. 
 
 <hr>
 

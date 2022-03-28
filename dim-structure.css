@@ -1,5 +1,7 @@
 
 :root {
+	--xxs: 288px;
+	--xs: 384px;
 	--sm: 576px;
 	--md: 768px;
 	--lg: 992px;
@@ -10,6 +12,14 @@
 
 /**********************************             SLIM CONTAINERS              ********************************/
 
+/* ΠΡΟΤΑΣΗ: κι άλλα πιο μικρά */
+
+.xxs{
+	max-width: var(--xxs);
+}
+.xs{
+	max-width: var(--xs);
+}
 .sm{
 	max-width: var(--sm);
 }
@@ -57,45 +67,53 @@
   
 /***************************************              DIM CENTERING            **************************************/
 
+/* ΠΡΟΤΑΣΗ: center, center-x, center-xy, */
+
 /* τοποθέτηση στο κέντρο της γραμμής για div ή image, και στοίχιση κειμένου στο κέντρο για κείμενο */
 .center{    
 	display: block;					/* important for everything */
-	margin-left: auto !important;	/* centers if this is image or div*/
-	margin-right: auto !important;	/* centers if this is image or div*/
+	margin-inline: auto !important; /* centers if this is image or div*/
 	text-align: center;				/* centers if this is text */
-  }
+}
+/* to be avoided - κέντρο ως προς τον πατέρα του αγνοώντας τo χώρο που πιάνουν τα αδέλφια του, άρα ούτως ή άλλως πρέπει να μπει σε ξεχωριστό div */
+/* .centered {position: relative;top: 50%; left: 50%; transform: translate(-50%, -50%);} */
 
 /* Τοποθέτηση περιεχομένων στο κέντρο, ως προς τον οριζόντιο άξονα. Αν είναι πολλά, μπαίνουν το ένα κάτω από το άλλο. 
 Προσοχή: Τοποθέτηση, όχι στοίχιση (πχ κειμένου με πολλές γραμμές). Βλ. center παραπάνω για στοίχιση. 
 Αν το ύψος του αντικειμένου είναι (καθορισμένα) μεγαλύτερο από τα περιεχόμενα του, τότε αυτά τοποθετούνται στο κέντρο και ως προς τον κατακόρυφο άξονα */
 .center-contents{
-	display: grid;
+	display: grid;              /*(το grid έχει το ίδιο αποτέλεσμα με το flex:space-around) */
 	place-items: center;
-	/*display: flex;					/*old way με το ίδιο αποτέλεσμα (ναι, στο space-around αναφέρομαι!) */
-	/*flex-direction: column;	 		/* column=vertically - one line per item */	
+}
+/* center only on x axis */
+.center-contents-top{         
+    display: flex;					
+	flex-direction: column;	 		/* column=vertically - one line per item */	
 	/*justify-content: space-around; 	/* center vertically - H στοίχηση των παιδιών σαν σύνολο (εφαρμόζεται μόνο αν το ύψος είναι μεγαλύτερο από το ύψος των περιεχομένων) */
-	/*align-items: center;				/* center horizontally - Αυτό που θέλουμε βασικά */
+	align-items: center;				/* center horizontally - Αυτό που θέλουμε βασικά */
 	/* το alight items είναι ο άλλος άξονας από το flex direction και είναι η στοίχιση του κάθε παιδιού ξεχωριστά */
 }
 
+
+/***************************************              DIM INLINE             **************************************/
+
+/* ΠΡΟΤΑΣΗ: inline-xy-md, inline-y-md, inline-contents-xy-md, inline-middle-lg */
+
+/* Θυμίζω το class^=something πιάνει μόνο αν όλο το class attribute ξεκινάει με something* όχι αν μια από τις κλάσσεις ξεκινάει με something*... */
+
 /* Τοποθέτηση (κι εδώ όχι στοίχιση) περιεχομένων στο κέντρο. Αν είναι πολλά, μπαίνουν όλα στην ίδια γραμμή.*/
-[class*="center-contents"][class*="inline"]{				/* Η κλάση ξεκινάει με center-contents και έχει inline, πχ center-contents-md-inline */
+[class*="inline-contents"]{				/* Θυμίζω το class^=something πιάνει μόνο αν ΟΛΟ το class attribute ξεκινάει με something* */
 	display: flex;
 	flex-flow: row wrap;			/* row=horizontally - all in same line if they fit */
 	justify-content: space-around;	/* center horizontally - αντίστροφα από την άλλη κλάση - αυτό που θέλουμε βασικά */
+    align-items: center;			/* center vertically - αντίστροφα από την άλλη κλάση - στοίχηση και κατακόρυφα, στον άλλο άξονα δηλαδή */
 }
-[class*="inline-middle"]{				/* πχ  center-contents-md-inline-middle */
-	align-items: center;			/* center vertically - αντίστροφα από την άλλη κλάση - στοίχηση και κατακόρυφα, στον άλλο άξονα δηλαδή */
+[class*="inline-contents-top"]{				/* πχ  center-contents-md-inline-middle */
+    align-items: start;			/* center vertically - αντίστροφα από την άλλη κλάση - στοίχηση και κατακόρυφα, στον άλλο άξονα δηλαδή */
 }
-@media (max-width: 768px) {.center-contents-md-inline, .center-contents-md-inline-middle {flex-direction: column !important; align-items: center;}}		
-@media (max-width: 992px) {.center-contents-lg-inline, .center-contents-lg-inline-middle {flex-direction: column !important; align-items: center;}}	
+@media (max-width: 768px) {.inline-contents-md, .inline-contents-top-md {flex-direction: column !important; align-items: center;}}		
+@media (max-width: 992px) {.inline-contents-lg, .inline-contents-top-lg {flex-direction: column !important; align-items: center;}}	
 /* inline (στήλες) σε μεσαίες ή/και μεγάλες οθόνες, center στα κινητά. Τα important είναι απαραίτητα αν δεν μπει όλο αυτό στο τέλος του css */
-
-/*για κείμενο κέντρο στα κινητά, αριστερά για PC*/
-.center-left{display: block;text-align: left;}
-@media (max-width: 992px) {.center-left {text-align: center ; margin-left: auto; margin-right: auto;}}	
-
-
 
 
 
@@ -105,6 +123,10 @@
 Οριζόντια δομή με 3 παιδιά. Ένα στοιχησμένο αριστερά, ένα κέντρο και ένα δεξιά. Χρησιμο για navigation bar
 standard-inline-2-structure: Δύο παιδιά, αριστερά-δεξιά. 
 */
+
+
+
+/*ΠΡΟΤΑΣΗ: inline-full-3, inline-standard-3, inline-bar-3 */
 
 .standard-inline-3 {
 	display: grid;
@@ -116,7 +138,7 @@ standard-inline-2-structure: Δύο παιδιά, αριστερά-δεξιά.
 	grid-template-columns: auto 1fr;
 	align-items: center; 
 }
-[class*=standard-inline] > *:first-child {
+[class*=standard-inline] > *:first-child {          
 	justify-self: start;
 	overflow: hidden;
 }
@@ -128,13 +150,13 @@ standard-inline-2-structure: Δύο παιδιά, αριστερά-δεξιά.
 
 /***********************************        EQUAL COLUMNS  &  TEXT COLUMNS        ******************************************/
  
-[class^=equal-columns]{
+[class*=equal-columns]{
 	display: grid;
 	grid-auto-flow: column;
 	grid-auto-columns: 1fr;
 	gap: 2vmax;
 }
-[class^=equal-columns] > * {overflow: hidden}
+[class*=equal-columns] > * {overflow: hidden}
 @media (max-width: 768px) { .equal-columns-md{grid-auto-flow: row} }
 @media (max-width: 992px) { .equal-columns-lg{grid-auto-flow: row} }
 
@@ -197,7 +219,8 @@ img[data-src][data-lazy="#"]{opacity: 0;}
 Πχ chordpage HTML: 
 <main class="landing-page scrollable ">
 	<div class="container-lg bg-lavender py-1">
-	</div></main> 
+	</div>
+</main> 
 */
 
 
