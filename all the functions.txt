@@ -1,89 +1,94 @@
 
 /**
- * ALL FUNCTIONS:
- 
- * Q(queryString)
- * * Q(".class"), Q("#id"), Q("[any]"), Q("~variable")
- 
- * DimFetch(URL,property,tries)
+* ALL FUNCTIONS:
+
+* Q(queryString)
+* * Q(".class"), Q("#id"), Q("[any]"), Q("~variable")
+
+* DimFetch(URL,property,tries)
 
 
 Creators:
- * CreateCustomElement          
- * Dim.RandomSequence(length)           
- * Dim.IntegerGenerator()           
+* CreateCustomElement          
+* Dim.RandomSequence(length)           
+* Dim.IntegerGenerator()           
 
 Dev & debug:
- * isDev // variable (not function)
- * log()
- * check()
- * err(message)         +doc
- 
+* isDev // variable (not function)
+* log()
+* check()
+* err(message)         +doc
+
 Variables:
- * Dim.typeof
- * setCssProperty()
- * isValid(variableAsString)   //deprecated 
- * safeEval(expressionAsString, valueIfInvalid=false)     // ΝΑ ΦΥΓΟΥΝ ΤΑ EVAL
+* Dim.typeof
+* setCssProperty()
+* isValid(variableAsString)   //deprecated 
+* safeEval(expressionAsString, valueIfInvalid=false)     // ΝΑ ΦΥΓΟΥΝ ΤΑ EVAL
 
 Arrays:         
- * Unique
- * Sum
- * SortByNumber
- * RunningTotal(arr)
- * Vector.add
- * Vector.subtract
- * Vector.multiply(vector,number)
- * Vector.dotProduct(vector1,vector2)
+* Unique
+* Sum
+* SortByNumber
+* RunningTotal(arr)
+* Vector.add
+* Vector.subtract
+* Vector.multiply(vector,number)
+* Vector.dotProduct(vector1,vector2)
 
 Strings:
- * properTrim 
- * wordsOf(sentence)
- * (String.prototype.test)        //for RegExp - deprecated
+* properTrim 
+* wordsOf(sentence)
+* (String.prototype.test)        //for RegExp - deprecated
 
 Numbers:
- * numberOf()      //convert to number
- * parseNumber()     //extract number
- * clamp(number,min,max)
+* numberOf()      //convert to number
+* parseNumber()     //extract number
+* clamp(number,min,max)
 
 Keyboard:
- * KeyString(keyEvent)
+* KeyString(keyEvent)
 
 Data
- * DimFetch
+* DimFetch
 
- * Dim.Executions
+* Dim.memoize(functionToCompute)
+* Dim.typeof
+* Dim.runAsync
+* Dim.clone()  // structuredClone(value) - deprecated
 
- * Dim.clone()  // structuredClone(value)  +doc
- * Dim.executeOnce
- * Dim.executeSparsely
- * Dim.executeAfterRapidFire
- * Dim.watch(variableNameInString,callbackFunction)
- * Dim.declareWatchedVariable(variableName, variableValue=null,callbackFunction)    //deprecated
- * Dim.runAsync
 
- * Dim.lastWord
- * Dim.LazyLoadImages(delay=1)
- * Dim.LazyLoadResource(resourceURL, delay=3)
- * Dim.load(target, url)   -> Να γίνει με fetch και με callback, σαν Q().fetch
- 
- * Dim.Nav.GetParameters()
- * Dim.Nav.CreateNewState()
- * Dim.Nav.RefreshWindow(keepGetParameters=true)
- * Dim.Nav.URL()
- * Dim.Nav.path()
- * Dim.Nav.domain()
- * Dim.Nav.previous()
- 
- * RegularExpression  (ExpReg)  
- * * Contains,StartsWith,EndsWith
- 
- * await delay(pauseInterval)
- * await until(condition)
- * setTimeoutUntil(condition, callback, checkInterval = 200)
- * setIntervalFiniteTimes(func, interval, num, finallyExecute = ()=>{})
- * Dim.checkFor(condition)
- 
- * Dim.Cookies. {setCookie,getCookie,eraseCookie}
- 
- * 
+* Dim.Executions
+
+* Dim.executeOnce
+* Dim.executeSparsely
+* Dim.executeAfterRapidFire
+* Dim.watch(variableNameInString,callbackFunction)
+* Dim.declareWatchedVariable(variableName, variableValue=null,callbackFunction)    //deprecated
+
+
+* Dim.lastWord
+* Dim.LazyLoadImages(delay=1)
+* Dim.LazyLoadResource(resourceURL, delay=3)
+* Dim.load(target, url)   -> Να γίνει με fetch και με callback, σαν Q().fetch
+
+* Dim.Nav.GetParameters()
+* Dim.Nav.CreateNewState()
+* Dim.Nav.RefreshWindow(keepGetParameters=true)
+* Dim.Nav.URL()
+* Dim.Nav.path()
+* Dim.Nav.domain()
+* Dim.Nav.previous()
+
+* RegularExpression  (ExpReg)  
+* * Contains,StartsWith,EndsWith
+
+* await delay(pauseInterval)
+* await until(condition)
+* setTimeoutUntil(condition, callback, checkInterval = 200)
+* setIntervalFiniteTimes(func, interval, num, finallyExecute = ()=>{})
+* Dim.checkFor(condition)
+
+* Dim.Cookies. {setCookie,getCookie,eraseCookie}
+
+* 
  */

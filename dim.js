@@ -229,7 +229,13 @@ this.KeyString ??= (keyEvent) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-this.DimFetch ??= async (URL,property=null,tries=3) => {      // property for result object property, true for entire object, null or false for text, 
+/** 
+ * A better fetch by dim. Returns a promise. Resolves with success, or rejects if error.
+ * @param {URL} URL the url of the file to fetch
+ * @param {string} property for result object property, true for entire object, null/false/undefinded for text, 
+ * @param {string} tries, the number of tries before failure. Default is 3
+ */
+var DimFetch = async (URL,property=null,tries=3) => {      
     const delay = (pauseInterval)=> new Promise(resolve=>setTimeout(resolve,pauseInterval));
     let fetchResult = null;
     if (!(tries>0)) {tries=3}    // if tries=="bullshit", tries=3;
@@ -242,7 +248,7 @@ this.DimFetch ??= async (URL,property=null,tries=3) => {      // property for re
              })
             .then(data=>(property&&property!==true)?data[property]:data)      //property truthy but not true!
             .catch(e=>{gotError=true;return null});     // fetchResult=null;
-        if (gotError) {await delay(500*tries); continue} else {break}
+        if (gotError) {await delay(500*i); continue} else {break}
     }
     return fetchResult;
 };
@@ -287,6 +293,24 @@ runAsync: func => Promise.resolve().then(func),      //not tested fully
     else if (typeof source == 'function') {return source.bind({});}
     else {throw "clone failed: wrong argument"}
 },*/
+
+
+/** 
+ * By Web Dev Siplified. Used for Dynamic Programming computatins 
+ * Create a NEW memoized version of a given function when it is called, 
+ * so call it only once and store it as a separate function. Do not call it in every calculation!   
+ * */
+memoize: (functionToCompute) => {
+    const cache = new Map();    // stores already computed values
+    return (...args) => {
+        const key = JSON.stringify(args);
+        if (cache.has(key)) {return cache.get(key)}     // if already compute it, return it
+        const result = functionToCompute(...args);       // else, compute it
+        cache.set(key, result);
+        return result;
+    }
+},
+
 
 Executions: {},
 lastWord: str => str.split(" ").at(-1),
